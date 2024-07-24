@@ -14,7 +14,15 @@ const deliverSchema = new mongoose.Schema({
     tiencuoc:Number,
     vehicleId:String,
     deliverId:String,
-    socketId:String
+    socketId:String,
+    reviews:[
+        {
+            type:mongoose.Schema.Types.ObjectId,
+            ref:'ReviewDeliver'
+        }
+    ],
+    rating:Number,
+    numRatings:Number
 })
 const Deliver = mongoose.model('Deliver',deliverSchema);
 module.exports = Deliver;

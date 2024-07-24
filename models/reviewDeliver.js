@@ -1,12 +1,9 @@
 const mongoose = require('mongoose');
-const reviewSchema = new mongoose.Schema({
+const reviewDeliverSchema = new mongoose.Schema({
     clientName:{
         type:String
     },
     comment:{
-        type:String
-    },
-    id:{
         type:String
     },
     rating:{
@@ -15,10 +12,13 @@ const reviewSchema = new mongoose.Schema({
     timeStamp: {
         type:Date
     },
-    restaurant:{
+    deliver:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'Restaurant'
+        ref:'Deliver'
     },
+    id:{
+        type:String
+    }
 })
-const Review = mongoose.model('Review',reviewSchema);
-module.exports = Review;
+const ReviewDeliver = mongoose.model('ReviewDeliver',reviewDeliverSchema);
+module.exports = ReviewDeliver;

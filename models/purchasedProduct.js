@@ -16,7 +16,8 @@ const purchasedProductSchema = new mongoose.Schema({
     quantityInDay:Number,
     restaurantId:String,
     restaurantName:String,
-    timestamp:Date
+    timestamp:Date,
+    productId:String
 })
 const PurchasedProduct = mongoose.model('PurchasedProduct',purchasedProductSchema);
 module.exports = PurchasedProduct;

@@ -32,6 +32,12 @@ const restaurantSchema = new mongoose.Schema({
             ref:'Product'
         }
     ],
+    reviews:[
+        {
+            type:mongoose.Schema.Types.ObjectId,
+            ref:'Review'
+        }
+    ],
     numRatings:Number,
     rating:Number,
     stars:{ type: [Number] } 
