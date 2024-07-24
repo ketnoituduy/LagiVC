@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 4000;
 const ipAddress = process.env.IP_ADDRESS;
 const cors = require('cors');
 
@@ -167,6 +167,10 @@ http.listen(port, () => {
     console.log('Server dang hoat dong');
     console.log(ipAddress, port);
 })
+
+app.get('/', (req, res) => {
+    res.send('Hello World!')
+  })
 
 
 //Lay du lieu khu vuc
