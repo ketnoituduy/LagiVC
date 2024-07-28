@@ -50,5 +50,8 @@ restaurantRouter.post('/updateProduct/:productId',restaurantController.updatePro
 restaurantRouter.post('/deleteProduct/:productId',restaurantController.deleteProduct);
 //lay du lieu cua hang tu danh sach nha hang
 restaurantRouter.get('/restaurants/:id',restaurantController.getRestaurantFromRestaurants);
-
+//lay du lieu supportShip tu nha hang
+restaurantRouter.get('/getSupportShip/:id',restaurantController.getSupportShipFromRestaurant);
+//cap nhat du lieu supportShip
+restaurantRouter.post('/updateSupportShip/:id',restaurantController.updateSupportShipFromRestaurant);
 module.exports = restaurantRouter;

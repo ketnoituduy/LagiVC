@@ -99,16 +99,16 @@ const restaurantController = {
     //Tim kiem nha hang tu san pham
     searchRestaurantFromProduct: async (req, res) => {
         const restaurantId = req.params.restaurantId;
-        console.log('rreee',restaurantId);
-        try{
+        console.log('rreee', restaurantId);
+        try {
             const restaurant = await Restaurant.findOne({ restaurantId: restaurantId });
             res.status(200).json(restaurant);
         }
-        catch(err){
+        catch (err) {
             res.status(500).json({ message: 'khong co nha hang' });
         }
-       
-       
+
+
     },
     //san pham ban chay trong ngay
     bestSellerInDay: async (req, res) => {
@@ -430,6 +430,38 @@ const restaurantController = {
                 return res.status(500).json({ message: 'Không tìm thấy cua hang' });
             }
             res.status(200).json(restaurant);
+        }
+        catch (err) {
+            console.log(err);
+        }
+    },
+    //Lay du lieu supportShip tu cua hang
+    getSupportShipFromRestaurant: async (req, res) => {
+        try {
+            const id = req.params.id;
+            const restaurant = await Restaurant.findOne({ restaurantId: id });
+            if (!restaurant) {
+                return res.status(500).json({ message: 'Không tìm thấy cua hang' });
+            }
+            const supportShips = restaurant.supportShips;
+            res.status(200).json(supportShips);
+        }
+        catch (err) {
+            console.log(err);
+        }
+    },
+    //cap nhat du lieu supportShip tu cua hang
+    updateSupportShipFromRestaurant: async (req, res) => {
+        try {
+            const id = req.params.id;
+            const data = req.body;
+            const restaurant = await Restaurant.findOne({ restaurantId: id });
+            if (!restaurant) {
+                return res.status(500).json({ message: 'Không tìm thấy cua hang' });
+            }
+            restaurant.supportShips = data;
+            await restaurant.save();
+            res.status(200).json({message:'cap nhat supportShips thanh cong'});
         }
         catch (err) {
             console.log(err);
