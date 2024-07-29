@@ -125,23 +125,29 @@ const authController = {
 
     // dang nhap tai khoan
     loginAccount: async (req, res) => {
-        const { email, password, socketId } = req.body;
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(400).json({ message: 'User chua duoc dang ky' });
+        try {
+            const { email, password, socketId } = req.body;
+            const user = await User.findOne({ email: { $regex: new RegExp('^' + email, 'i') } });
+
+            if (!user) {
+                return res.status(400).json({ message: 'User chua duoc dang ky' });
+            }
+            if (user.password !== password) {
+                return res.status(401).json({ message: 'Mat khau khong chinh xac' });
+            }
+            if (!user.verified) {
+                return res.status(402).json({ message: 'Chua xac nhan Email dang ky' });
+            }
+
+            const token = createToken(user._id);
+            const khuvucId = user.khuvuc.khuvucId;
+            user.socketId = socketId;
+            await user.save();
+
+            res.status(200).json({ token, khuvucId });
+        } catch (error) {
+            res.status(500).json({ message: 'Internal Server Error' });
         }
-        if (user.password != password) {
-            return res.status(401).json({ message: 'Mat khau khong chinh xac' });
-        }
-        if (!user.verified) {
-            return res.status(402).json({ message: 'Chua xac nhan Email dang ky' });
-        }
-        const token = createToken(user._id);
-        const khuvucId = user.khuvuc.khuvucId;
-        user.socketId = socketId;
-        await user.save();
-        // next();
-        res.status(200).json({ token, khuvucId });
     }
 }
 
