@@ -3,6 +3,9 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const ipAddress = process.env.IP_ADDRESS;
+const port = process.env.PORT || 4000;
+
 
 const createToken = (userId) => {
     const payload = {
