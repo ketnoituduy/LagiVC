@@ -28,7 +28,7 @@ const sendVerificationEmail = async (email, verificationToken) => {
         from: 'Lagi VC',
         to: email,
         subject: 'Email verification',
-        text: `Vui lòng nhấn link này để xác nhận Email của bạn : http://${ipAddress}:${port}/verify/${verificationToken}`
+        text: `Vui lòng nhấn link này để xác nhận Email của bạn : ${ipAddress}/verify/${verificationToken}`
     };
     try {
         await transpoter.sendMail(mailOption);
