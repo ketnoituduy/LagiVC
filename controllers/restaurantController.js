@@ -346,12 +346,22 @@ const restaurantController = {
     //lay du lieu san pham cua cua hang de cap nhat 
     getUpdateProductsFromRestaurant: async (req, res) => {
         const id = req.params.restaurantId;
-        const restaurant = await Restaurant.findOne({ restaurantId: id }).populate('products');
-        if (!restaurant) {
-            return res.status(500).json({ message: 'khong tim thay cua hang' });
+        const pageNumber = req.query.page || 1;
+        const perPage = 10;
+        const skip = (pageNumber - 1) * perPage;
+        const products = await Product.find({restaurant:id}).sort({_id:-1}).skip(skip).limit(perPage);
+        if(products){
+            res.status(200).json({ productsData: products });
         }
-        const products = restaurant.products;
-        res.status(200).json({ productsData: products });
+        else{
+            res.status(500).json({message:'khong co du lieu products'});
+        }
+        // const restaurant = await Restaurant.findOne({ restaurantId: id }).populate('products');
+        // if (!restaurant) {
+        //     return res.status(500).json({ message: 'khong tim thay cua hang' });
+        // }
+        // const products = restaurant.products;
+        // res.status(200).json({ productsData: products });
     },
     //tao san pham
     createProduct: async (req, res) => {
