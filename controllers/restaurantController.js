@@ -347,11 +347,10 @@ const restaurantController = {
     getUpdateProductsFromRestaurant: async (req, res) => {
         const id = req.params.restaurantId;
         const pageNumber = req.query.page || 1;
-        const perPage = 5;
+        const perPage = 10;
         const skip = (pageNumber - 1) * perPage;
         const products = await Product.find({restaurant:id}).sort({_id:-1}).skip(skip).limit(perPage);
         if(products){
-            console.log('products',products);
             res.status(200).json({ productsData: products });
         }
         else{
