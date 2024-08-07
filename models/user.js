@@ -30,7 +30,11 @@ const userSchema = new mongoose.Schema({
     //     longitude:{type:Number},
     //     streetAddress:{type:String}
     // },
-    socketId:String
+    socketId:String,
+    admin:{
+        type:Boolean,
+        default:false
+    }
 })
 
 const User = mongoose.model('User',userSchema);

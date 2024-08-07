@@ -28,6 +28,7 @@ const restaurantRouter = require('./routes/restaurant');
 const orderRouter = require('./routes/order');
 const deliverRouter = require('./routes/deliver');
 const authRouter = require('./routes/auth');
+const adminRouter = require('./routes/admin');
 
 const mongoDb = process.env.MONGO_DB;
 
@@ -204,7 +205,7 @@ app.use(userRouter);
 app.use(restaurantRouter);
 app.use(orderRouter);
 app.use(deliverRouter);
-
+app.use(adminRouter);
 
 const fetchDriversFromRestaurant = async (data, order) => {
     const orderId = data.orderId;
