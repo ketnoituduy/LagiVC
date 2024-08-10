@@ -22,7 +22,9 @@ const deliverSchema = new mongoose.Schema({
         }
     ],
     rating:Number,
-    numRatings:Number
+    numRatings:Number,
+    urlImageCMNDMatTruoc:String,
+    urlImageCMNDMatSau:String
 })
 const Deliver = mongoose.model('Deliver',deliverSchema);
 module.exports = Deliver;
