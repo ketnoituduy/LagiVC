@@ -82,6 +82,34 @@ const adminController = {
             return res.status(403).json({message:'không phải là admin'});
         }
         res.status(200).json({message:'dang nhap user admin thanh cong'});
+    },
+    deleteDeliver:async(req,res)=>{
+        const id = req.params.deliverId;
+        Deliver.deleteOne({ _id: id }, (err) => {
+            if (err) {
+                console.log('loi xoa deliver tu admin');
+                res.status(500).json({message:'xoa tai xe khong thanh cong tu admin'})
+              // Xử lý lỗi
+            } else {
+                console.log('xoa thanh cong deliver');
+                res.status(200).json({message:'xoá thành công tài xế'});
+              // Xóa thành công
+            }
+          });
+    },
+    deleteRestaurant:async(req,res)=>{
+        const id = req.params.restaurantId;
+        Restaurant.deleteOne({ _id: id }, (err) => {
+            if (err) {
+                console.log('loi xoa restaurant tu admin');
+                res.status(500).json({message:'xoa restaurant khong thanh cong tu admin'})
+              // Xử lý lỗi
+            } else {
+                console.log('xoa thanh cong cửa hàng');
+                res.status(200).json({message:'xoá thành công cửa hàng'});
+              // Xóa thành công
+            }
+          });
     }
 }
 module.exports = adminController;
