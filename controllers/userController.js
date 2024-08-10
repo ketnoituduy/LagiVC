@@ -68,15 +68,13 @@ const userController = {
             if (!user) {
                 return res.status(500).json({ message: 'khong co user' });
             }
-            const { name, phoneNumber, email, urlAvatar, location,urlImageCMNDMatTruoc,urlImageCMNDMatSau } = user;
+            const { name, phoneNumber, email, urlAvatar, location } = user;
             const data = {
                 name,
                 phoneNumber,
                 email,
                 urlAvatar,
-                location,
-                urlImageCMNDMatTruoc,
-                urlImageCMNDMatSau
+                location
             }
             res.status(200).json(data);
         }
