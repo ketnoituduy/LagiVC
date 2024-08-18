@@ -1,6 +1,7 @@
 
 require('dotenv').config();
 const express = require('express');
+const rateLimit = require("express-rate-limit");
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
@@ -9,6 +10,12 @@ const port = process.env.PORT || 4000;
 const ipAddress = process.env.IP_ADDRESS;
 const cors = require('cors');
 
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // số lượng request tối đa trong windowMs cho mỗi IP
+    message: "Quá nhiều yêu cầu từ IP của bạn, vui lòng thử lại sau một thời gian."
+  });
+app.use(limiter);
 
 const User = require('./models/user');
 const Restaurant = require('./models/restaurant');
