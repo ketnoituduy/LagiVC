@@ -12,7 +12,7 @@ const cors = require('cors');
 
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // số lượng request tối đa trong windowMs cho mỗi IP
+    max: 500, // số lượng request tối đa trong windowMs cho mỗi IP
     message: "Quá nhiều yêu cầu từ IP của bạn, vui lòng thử lại sau một thời gian."
   });
 app.use(limiter);
@@ -59,7 +59,10 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-
+http.listen(port, () => {
+    console.log('Server dang hoat dong');
+    console.log(ipAddress, port);
+})
 // Xử lý các sự kiện kết nối từ client
 socketIO.on('connection', (socket) => {
     console.log('A user connected', socket.id);
@@ -171,10 +174,7 @@ socketIO.on('connection', (socket) => {
 });
 
 
-http.listen(port, () => {
-    console.log('Server dang hoat dong');
-    console.log(ipAddress, port);
-})
+
 
 app.get('/', (req, res) => {
     res.status(200).send('Hello World!');
