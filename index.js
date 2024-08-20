@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const rateLimit = require("express-rate-limit");
 const bodyParser = require('body-parser');
+const helmet = require('helmet');
 const mongoose = require('mongoose');
 
 const app = express();
@@ -11,10 +12,11 @@ const ipAddress = process.env.IP_ADDRESS;
 const cors = require('cors');
 
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
+    windowMs: 10 * 60 * 1000, // 10 minutes
     max: 500, // số lượng request tối đa trong windowMs cho mỗi IP
     message: "Quá nhiều yêu cầu từ IP của bạn, vui lòng thử lại sau một thời gian."
   });
+app.use(helmet());
 app.use(limiter);
 
 const User = require('./models/user');
