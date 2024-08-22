@@ -44,12 +44,18 @@ const userController = {
             if (user.password !== userData.password) {
                 return res.status(401).json({ message: 'Mật khẩu không hợp lệ' });
             }
-
+            const restaurant = await Restaurant.findOne({ restaurantId: userId });
+            const deliver = await Deliver.findOne({ deliverId: userId });
+            if (restaurant || deliver) {
+                // Nếu user đang liên kết với tài khoản restaurant hoặc deliver
+                // Bạn có thể tự động tạo logic xử lý ở đây
+                return res.status(409).json({ message: 'Không thể xóa người dùng vì đang liên kết với tài khoản restaurant hoặc deliver' });
+            }
             // Xóa người dùng
             const deletedUser = await User.findByIdAndDelete(userId);
             if (deletedUser) {
-                await Restaurant.findOneAndDelete({ restaurantId: userId });
-                await Deliver.findOneAndDelete({ deliverId: userId });
+                // await Restaurant.findOneAndDelete({ restaurantId: userId });
+                // await Deliver.findOneAndDelete({ deliverId: userId });
                 return res.status(200).json({ message: 'Người dùng đã được xóa' });
             } else {
                 return res.status(500).json({ message: 'Lỗi khi xóa người dùng' });
