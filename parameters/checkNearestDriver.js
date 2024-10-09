@@ -11,7 +11,7 @@ const checkNearestDriver = async (restaurantLocation, orderId, NearestDrivers, n
         return;
     }
     let nearestDriver = null;
-    let minDistance = Infinity;
+    let minDistanceObj = { minDistance: Infinity, rating: 0 }; // Object chứa thông tin minDistance và rating
     if (NearestDrivers.length >= delivers.length) {
         NearestDrivers = [];
         // const order = await Order.findById(orderId);
@@ -32,8 +32,13 @@ const checkNearestDriver = async (restaurantLocation, orderId, NearestDrivers, n
             const point1 = { latitude: restaurantLocation.latitude, longitude: restaurantLocation.longitude };
             const point2 = { latitude: doc._doc.latitude, longitude: doc._doc.longitude };
             const distance = haversine(point1, point2);
-            if (distance < minDistance) {
-                minDistance = distance;
+            if (distance < 1500 && doc._doc.rating > minDistanceObj.rating) { // Kiểm tra đánh giá và khoảng cách
+                minDistanceObj.minDistance = distance;
+                minDistanceObj.rating = doc._doc.rating;
+                nearestDriver = { ...doc._doc };
+            } else if (distance < minDistanceObj.minDistance) {
+                minDistanceObj.minDistance = distance;
+                minDistanceObj.rating = doc._doc.rating;
                 nearestDriver = { ...doc._doc };
             }
         }
