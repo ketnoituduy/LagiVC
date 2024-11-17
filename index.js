@@ -38,6 +38,7 @@ const orderRouter = require('./routes/order');
 const deliverRouter = require('./routes/deliver');
 const authRouter = require('./routes/auth');
 const adminRouter = require('./routes/admin');
+const Version = require('./models/version');
 
 const mongoDb = process.env.MONGO_DB;
 
@@ -182,6 +183,15 @@ app.get('/', (req, res) => {
     res.status(200).send('Hello World!');
   })
 
+// Endpoint để lấy phiên bản mới nhất
+app.get('/api/version', async (req, res) => {
+    Version.findOne().then(data =>{
+        res.status(200).json(data);
+
+    }).catch(err=>{
+        res.status(500).json({message:'loi truyen version'});
+    })
+});  
 
 //Lay du lieu khu vuc
 app.get('/khuvuc', async (req, res) => {
