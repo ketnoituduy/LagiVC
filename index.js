@@ -187,7 +187,7 @@ app.get('/', (req, res) => {
 app.get('/api/version', async (req, res) => {
     Version.find().then(data =>{
         console.log('version',data);
-        res.status(200).json(data);
+        res.status(200).json(data[0]);
 
     }).catch(err=>{
         res.status(500).json({message:'loi truyen version'});
