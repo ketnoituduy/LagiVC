@@ -185,7 +185,7 @@ app.get('/', (req, res) => {
 
 // Endpoint để lấy phiên bản mới nhất
 app.get('/api/version', async (req, res) => {
-    Version.findOne().then(data =>{
+    Version.find().then(data =>{
         console.log('version',data);
         res.status(200).json(data);
 
