@@ -28,6 +28,8 @@ const Region = require('./models/region');
 const Parameter = require('./models/parameter');
 const Category = require('./models/category');
 const OrderGrab = require('./models/orderGrab');
+const Version = require('./models/version');
+
 
 const checkNearestDriver = require('./parameters/checkNearestDriver');
 const checkNearestDriverGrab = require('./parameters/checkNearestDriverGrab');
@@ -38,7 +40,6 @@ const orderRouter = require('./routes/order');
 const deliverRouter = require('./routes/deliver');
 const authRouter = require('./routes/auth');
 const adminRouter = require('./routes/admin');
-const Version = require('./models/version');
 
 const mongoDb = process.env.MONGO_DB;
 
