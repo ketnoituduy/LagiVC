@@ -495,7 +495,7 @@ const restaurantController = {
                 startDate.setHours(0, 0, 0, 0);
                 const endDate = new Date(startDate);
                 endDate.setDate(endDate.getDate() + 1); // Thêm 1 ngày để bao gồm ngày hôm sau
-                console.log('date', date);
+              
                 // Tìm hóa đơn trong ngày đó
                 const orders = await Order.find({
                     restaurantId: id,
@@ -504,7 +504,7 @@ const restaurantController = {
                         $lt: endDate
                     }
                 });
-                console.log('startDate', startDate, endDate);
+            
 
                 // Tính tổng doanh thu
                 totalRevenue = orders.reduce((total, order) => total + order.totalAmount - order.transportFee, 0);

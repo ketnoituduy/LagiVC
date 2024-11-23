@@ -12,5 +12,7 @@ deliverRouter.post('/updatedLocationDeliver/:userId',deliverController.updateLoc
 deliverRouter.get('/delivers/location/:khuvucId/:vehicleId',deliverController.getLocationDelivers);
 //Danh gia tai xe
 deliverRouter.post('/reviewDeliver/:deliverId/:orderGrabId',deliverController.reviewDeliver);
+//lay du lieu doanh thu deliver
+deliverRouter.get('/getRevenueDeliver/:id/:mode/:date/:year/:month',deliverController.getRevenueDeliver);
 
 module.exports = deliverRouter;

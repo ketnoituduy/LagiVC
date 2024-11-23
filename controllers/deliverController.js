@@ -2,6 +2,8 @@ const User = require('../models/user');
 const Deliver = require('../models/deliver');
 const Parameter = require('../models/parameter');
 const ReviewDeliver = require('../models/reviewDeliver');
+const Order = require('../models/order');
+const OrderGrab = require('../models/orderGrab');
 const deliverController = {
     //dang ky tai xe
     createDeliver: async (req, res) => {
@@ -89,6 +91,114 @@ const deliverController = {
         deliver.numRatings = numRatings;
         await deliver.save();
         res.status(200).json({ message: 'goi danh gia tai xe thanh cong' });
+    },
+
+     //lay du lieu doanh thu tu deliver
+     getRevenueDeliver: async (req, res) => {
+        try {
+            const id = req.params.id;
+            const mode = req.params.mode;
+            const date = req.params.date;
+            const year = parseInt(req.params.year, 10);  // Chuyển đổi kiểu chuỗi sang số
+            const month = parseInt(req.params.month, 10); // Chuyển đổi kiểu chuỗi sang số
+            let totalRevenue = 0;
+            let totalGrabRevenue = 0;
+            let total = 0;
+
+            if (mode === 'date') {
+                const startDate = new Date(date); // Đối tượng Date từ chuỗi
+                // Đặt thời gian của startDate về 0 giờ 0 phút 0 giây
+                startDate.setHours(0, 0, 0, 0);
+                const endDate = new Date(startDate);
+                endDate.setDate(endDate.getDate() + 1); // Thêm 1 ngày để bao gồm ngày hôm sau
+              
+                // Tìm hóa đơn trong ngày đó
+                const orders = await Order.find({
+                    deliveryId: id,
+                    createdAt: {
+                        $gte: startDate,
+                        $lt: endDate
+                    }
+                });
+
+                 // Tìm hóa đơn Grab trong ngày đó
+                 const ordersGrab = await OrderGrab.find({
+                    deliveryId: id,
+                    createdAt: {
+                        $gte: startDate,
+                        $lt: endDate
+                    }
+                });
+            
+
+                // Tính tổng doanh thu
+                totalRevenue = orders.reduce((total, order) => total + order.transportFee, 0);
+                totalGrabRevenue = ordersGrab.reduce((total, order) => total + order.transportFee, 0);
+                total = totalRevenue + totalGrabRevenue;
+
+            } else if (mode === 'month') {
+                const startDate = new Date(year, month - 1, 1); // Tháng điều chỉnh từ [0-11]
+                const endDate = new Date(year, month, 1); // Đầu tháng tiếp theo
+
+                // Tìm hóa đơn trong tháng đó
+                const orders = await Order.find({
+                    deliveryId: id,
+                    createdAt: {
+                        $gte: startDate,
+                        $lt: endDate
+                    }
+                });
+
+                 // Tìm hóa đơn Grab trong ngày đó
+                 const ordersGrab = await OrderGrab.find({
+                    deliveryId: id,
+                    createdAt: {
+                        $gte: startDate,
+                        $lt: endDate
+                    }
+                });
+
+                 // Tính tổng doanh thu
+                 totalRevenue = orders.reduce((total, order) => total + order.transportFee, 0);
+                 totalGrabRevenue = ordersGrab.reduce((total, order) => total + order.transportFee, 0);
+                 total = totalRevenue + totalGrabRevenue;
+
+            } else if (mode === 'year') {
+                const startDate = new Date(year, 0, 1); // Bắt đầu năm
+                const endDate = new Date(year + 1, 0, 1); // Bắt đầu năm sau
+
+                // Tìm hóa đơn trong năm đó
+                const orders = await Order.find({
+                    deliveryId: id,
+                    createdAt: {
+                        $gte: startDate,
+                        $lt: endDate
+                    }
+                });
+
+                 // Tìm hóa đơn Grab trong ngày đó
+                 const ordersGrab = await OrderGrab.find({
+                    deliveryId: id,
+                    createdAt: {
+                        $gte: startDate,
+                        $lt: endDate
+                    }
+                });
+
+                 // Tính tổng doanh thu
+                 totalRevenue = orders.reduce((total, order) => total + order.transportFee, 0);
+                 totalGrabRevenue = ordersGrab.reduce((total, order) => total + order.transportFee, 0);
+                 total = totalRevenue + totalGrabRevenue;
+            }
+
+            // Trả kết quả doanh thu về cho client
+            res.status(200).json({ total });
+
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
     }
+
 }
 module.exports = deliverController;
