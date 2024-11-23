@@ -29,6 +29,7 @@ const orderSchema = new mongoose.Schema({
     restaurantPhone:String,
     status:Object,
     timestamp: String,
+    createdAt:Date,
     totalAmount:Number,
     transportFee:Number,
     vehicleId:String,

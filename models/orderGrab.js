@@ -21,6 +21,7 @@ const orderGrabSchema = new mongoose.Schema({
     points:[Object],
     status:Object,
     timestamp:String,
+    createdAt:Date,
     totalAmount:Number,
     transportFee:Number,
     vehicleId:String

@@ -484,7 +484,7 @@ const restaurantController = {
         try {
             const id = req.params.id;
             const mode = req.params.mode;
-            const date = req.params.date; // Ngày dạng chuỗi "10/8/2024, 22:25:23"
+            const date = req.params.date; 
             const year = parseInt(req.params.year, 10);  // Chuyển đổi kiểu chuỗi sang số
             const month = parseInt(req.params.month, 10); // Chuyển đổi kiểu chuỗi sang số
             let totalRevenue = 0;
@@ -498,14 +498,13 @@ const restaurantController = {
                 // Tìm hóa đơn trong ngày đó
                 const orders = await Order.find({
                     restaurantId: id,
-                    timestamp: {
+                    createdAt: {
                         $gte: startDate,
                         $lt: endDate
                     }
                 });
-                console.log('startDate',startDate);
-                console.log('order',orders);
-
+                console.log('startDate',startDate,endDate);
+               
                 // Tính tổng doanh thu
                 totalRevenue = orders.reduce((total, order) => total + order.totalAmount - order.transportFee, 0);
 
@@ -516,7 +515,7 @@ const restaurantController = {
                 // Tìm hóa đơn trong tháng đó
                 const orders = await Order.find({
                     restaurantId: id,
-                    timestamp: {
+                    createdAt: {
                         $gte: startDate,
                         $lt: endDate
                     }
@@ -532,7 +531,7 @@ const restaurantController = {
                 // Tìm hóa đơn trong năm đó
                 const orders = await Order.find({
                     restaurantId: id,
-                    timestamp: {
+                    createdAt: {
                         $gte: startDate,
                         $lt: endDate
                     }
