@@ -93,8 +93,8 @@ const deliverController = {
         res.status(200).json({ message: 'goi danh gia tai xe thanh cong' });
     },
 
-     //lay du lieu doanh thu tu deliver
-     getRevenueDeliver: async (req, res) => {
+    //lay du lieu doanh thu tu deliver
+    getRevenueDeliver: async (req, res) => {
         try {
             const id = req.params.id;
             const mode = req.params.mode;
@@ -111,25 +111,28 @@ const deliverController = {
                 startDate.setHours(0, 0, 0, 0);
                 const endDate = new Date(startDate);
                 endDate.setDate(endDate.getDate() + 1); // Thêm 1 ngày để bao gồm ngày hôm sau
-              
+
                 // Tìm hóa đơn trong ngày đó
                 const orders = await Order.find({
                     deliveryId: id,
                     createdAt: {
                         $gte: startDate,
                         $lt: endDate
-                    }
+                    },
+                    "status.name": "Đã giao"
+
                 });
 
-                 // Tìm hóa đơn Grab trong ngày đó
-                 const ordersGrab = await OrderGrab.find({
+                // Tìm hóa đơn Grab trong ngày đó
+                const ordersGrab = await OrderGrab.find({
                     deliveryId: id,
                     createdAt: {
                         $gte: startDate,
                         $lt: endDate
-                    }
+                    },
+                    "status.name": "Hoàn tất"
                 });
-            
+
 
                 // Tính tổng doanh thu
                 totalRevenue = orders.reduce((total, order) => total + order.transportFee, 0);
@@ -146,22 +149,24 @@ const deliverController = {
                     createdAt: {
                         $gte: startDate,
                         $lt: endDate
-                    }
+                    },
+                    "status.name": "Đã giao"
                 });
 
-                 // Tìm hóa đơn Grab trong ngày đó
-                 const ordersGrab = await OrderGrab.find({
+                // Tìm hóa đơn Grab trong ngày đó
+                const ordersGrab = await OrderGrab.find({
                     deliveryId: id,
                     createdAt: {
                         $gte: startDate,
                         $lt: endDate
-                    }
+                    },
+                    "status.name": "Hoàn tất"
                 });
 
-                 // Tính tổng doanh thu
-                 totalRevenue = orders.reduce((total, order) => total + order.transportFee, 0);
-                 totalGrabRevenue = ordersGrab.reduce((total, order) => total + order.transportFee, 0);
-                 total = totalRevenue + totalGrabRevenue;
+                // Tính tổng doanh thu
+                totalRevenue = orders.reduce((total, order) => total + order.transportFee, 0);
+                totalGrabRevenue = ordersGrab.reduce((total, order) => total + order.transportFee, 0);
+                total = totalRevenue + totalGrabRevenue;
 
             } else if (mode === 'year') {
                 const startDate = new Date(year, 0, 1); // Bắt đầu năm
@@ -173,22 +178,24 @@ const deliverController = {
                     createdAt: {
                         $gte: startDate,
                         $lt: endDate
-                    }
+                    },
+                    "status.name": "Đã giao"
                 });
 
-                 // Tìm hóa đơn Grab trong ngày đó
-                 const ordersGrab = await OrderGrab.find({
+                // Tìm hóa đơn Grab trong ngày đó
+                const ordersGrab = await OrderGrab.find({
                     deliveryId: id,
                     createdAt: {
                         $gte: startDate,
                         $lt: endDate
-                    }
+                    },
+                    "status.name": "Hoàn tất"
                 });
 
-                 // Tính tổng doanh thu
-                 totalRevenue = orders.reduce((total, order) => total + order.transportFee, 0);
-                 totalGrabRevenue = ordersGrab.reduce((total, order) => total + order.transportFee, 0);
-                 total = totalRevenue + totalGrabRevenue;
+                // Tính tổng doanh thu
+                totalRevenue = orders.reduce((total, order) => total + order.transportFee, 0);
+                totalGrabRevenue = ordersGrab.reduce((total, order) => total + order.transportFee, 0);
+                total = totalRevenue + totalGrabRevenue;
             }
 
             // Trả kết quả doanh thu về cho client

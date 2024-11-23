@@ -502,7 +502,8 @@ const restaurantController = {
                     createdAt: {
                         $gte: startDate,
                         $lt: endDate
-                    }
+                    },
+                    "status.name": { $nin: ["Đang xử lý","Chấp nhận", "Đã huỷ"] }
                 });
             
 
@@ -519,7 +520,9 @@ const restaurantController = {
                     createdAt: {
                         $gte: startDate,
                         $lt: endDate
-                    }
+                    },
+                    "status.name": { $nin: ["Đang xử lý","Chấp nhận", "Đã huỷ"] }
+
                 });
 
                 // Tính tổng doanh thu
@@ -535,7 +538,9 @@ const restaurantController = {
                     createdAt: {
                         $gte: startDate,
                         $lt: endDate
-                    }
+                    },
+                    "status.name": { $nin: ["Đang xử lý","Chấp nhận", "Đã huỷ"] }
+
                 });
 
                 // Tính tổng doanh thu
