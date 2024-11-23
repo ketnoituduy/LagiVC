@@ -484,17 +484,18 @@ const restaurantController = {
         try {
             const id = req.params.id;
             const mode = req.params.mode;
-            const date = req.params.date; 
+            const date = req.params.date;
             const year = parseInt(req.params.year, 10);  // Chuyển đổi kiểu chuỗi sang số
             const month = parseInt(req.params.month, 10); // Chuyển đổi kiểu chuỗi sang số
             let totalRevenue = 0;
 
             if (mode === 'date') {
-                // Cách xử lý date từ kiểu chuỗi "10/8/2024, 22:25:23"
                 const startDate = new Date(date); // Đối tượng Date từ chuỗi
+                // Đặt thời gian của startDate về 0 giờ 0 phút 0 giây
+                startDate.setHours(0, 0, 0, 0);
                 const endDate = new Date(startDate);
                 endDate.setDate(endDate.getDate() + 1); // Thêm 1 ngày để bao gồm ngày hôm sau
-                console.log('date',date);
+                console.log('date', date);
                 // Tìm hóa đơn trong ngày đó
                 const orders = await Order.find({
                     restaurantId: id,
@@ -503,8 +504,8 @@ const restaurantController = {
                         $lt: endDate
                     }
                 });
-                console.log('startDate',startDate,endDate);
-               
+                console.log('startDate', startDate, endDate);
+
                 // Tính tổng doanh thu
                 totalRevenue = orders.reduce((total, order) => total + order.totalAmount - order.transportFee, 0);
 
