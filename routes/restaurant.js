@@ -54,4 +54,7 @@ restaurantRouter.get('/restaurants/:id',restaurantController.getRestaurantFromRe
 restaurantRouter.get('/getSupportShip/:id',restaurantController.getSupportShipFromRestaurant);
 //cap nhat du lieu supportShip
 restaurantRouter.post('/updateSupportShip/:id',restaurantController.updateSupportShipFromRestaurant);
+//lay du lieu doanh thu cua hang
+restaurantRouter.get('/getRevenueRestaurant/:id/:mode/:date/:year/:month',restaurantController.getRevenueRestaurant);
+
 module.exports = restaurantRouter;

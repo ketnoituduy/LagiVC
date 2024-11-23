@@ -4,6 +4,7 @@ const Product = require('../models/product');
 const PurchasedProduct = require('../models/purchasedProduct');
 const Review = require('../models/review');
 const haversine = require('haversine');
+const Order = require('../models/order');
 
 const restaurantController = {
     //lay du lieu cac nha hang danh gia cao
@@ -349,12 +350,12 @@ const restaurantController = {
         const pageNumber = req.query.page || 1;
         const perPage = 10;
         const skip = (pageNumber - 1) * perPage;
-        const products = await Product.find({restaurant:id}).sort({_id:-1}).skip(skip).limit(perPage);
-        if(products){
+        const products = await Product.find({ restaurant: id }).sort({ _id: -1 }).skip(skip).limit(perPage);
+        if (products) {
             res.status(200).json({ productsData: products });
         }
-        else{
-            res.status(500).json({message:'khong co du lieu products'});
+        else {
+            res.status(500).json({ message: 'khong co du lieu products' });
         }
         // const restaurant = await Restaurant.findOne({ restaurantId: id }).populate('products');
         // if (!restaurant) {
@@ -471,11 +472,84 @@ const restaurantController = {
             }
             restaurant.supportShips = data;
             await restaurant.save();
-            res.status(200).json({message:'cap nhat supportShips thanh cong'});
+            res.status(200).json({ message: 'cap nhat supportShips thanh cong' });
         }
         catch (err) {
             console.log(err);
         }
+    },
+
+    //lay du lieu doanh thu tu cua hang
+    getRevenueRestaurant: async (req, res) => {
+        try {
+            const id = req.params.id;
+            const mode = req.params.mode;
+            const date = req.params.date; // Ngày dạng chuỗi "10/8/2024, 22:25:23"
+            const year = parseInt(req.params.year, 10);  // Chuyển đổi kiểu chuỗi sang số
+            const month = parseInt(req.params.month, 10); // Chuyển đổi kiểu chuỗi sang số
+
+            let totalRevenue = 0;
+
+            if (mode === 'date') {
+                // Cách xử lý date từ kiểu chuỗi "10/8/2024, 22:25:23"
+                const startDate = new Date(date); // Đối tượng Date từ chuỗi
+                const endDate = new Date(startDate);
+                endDate.setDate(endDate.getDate() + 1); // Thêm 1 ngày để bao gồm ngày hôm sau
+
+                // Tìm hóa đơn trong ngày đó
+                const orders = await Order.find({
+                    restaurantId: id,
+                    timestamp: {
+                        $gte: startDate,
+                        $lt: endDate
+                    }
+                });
+
+                // Tính tổng doanh thu
+                totalRevenue = orders.reduce((total, order) => total + order.totalAmount - order.transportFee, 0);
+
+            } else if (mode === 'month') {
+                const startDate = new Date(year, month - 1, 1); // Tháng điều chỉnh từ [0-11]
+                const endDate = new Date(year, month, 1); // Đầu tháng tiếp theo
+
+                // Tìm hóa đơn trong tháng đó
+                const orders = await Order.find({
+                    restaurantId: id,
+                    timestamp: {
+                        $gte: startDate,
+                        $lt: endDate
+                    }
+                });
+
+                // Tính tổng doanh thu
+                totalRevenue = orders.reduce((total, order) => total + order.totalAmount - order.transportFee, 0);
+
+            } else if (mode === 'year') {
+                const startDate = new Date(year, 0, 1); // Bắt đầu năm
+                const endDate = new Date(year + 1, 0, 1); // Bắt đầu năm sau
+
+                // Tìm hóa đơn trong năm đó
+                const orders = await Order.find({
+                    restaurantId: id,
+                    timestamp: {
+                        $gte: startDate,
+                        $lt: endDate
+                    }
+                });
+
+                // Tính tổng doanh thu
+                totalRevenue = orders.reduce((total, order) => total + order.totalAmount - order.transportFee, 0);
+            }
+
+            // Trả kết quả doanh thu về cho client
+            res.status(200).json({ totalRevenue });
+
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
     }
+
+
 }
 module.exports = restaurantController;
