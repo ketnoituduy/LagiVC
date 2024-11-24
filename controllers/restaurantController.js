@@ -112,16 +112,33 @@ const restaurantController = {
 
     },
     //san pham ban chay trong ngay
+    // Sản phẩm bán chạy trong ngày
     bestSellerInDay: async (req, res) => {
-        const startOfToday = new Date(new Date().setHours(0, 0, 0, 0));
-        const endOfToday = new Date(new Date().setHours(23, 59, 59, 999));
+        // Thiết lập thời gian bắt đầu và kết thúc cho ngày hôm nay
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0); // 0h ngày hôm nay
+
+        const endOfToday = new Date(startOfToday);
+        endOfToday.setDate(endOfToday.getDate() + 1);
+
         const khuvucId = req.params.khuvucId;
-        const purchasedProducts = await PurchasedProduct.find({ 'khuvuc.khuvucId': khuvucId, timestamp: { $gte: startOfToday, $lte: endOfToday } }).sort({ quantityInDay: -1 }).limit(15);
-        if (!purchasedProducts) {
-            return res.status(402).json({ message: 'khong co san pham ban chay trong ngay' });
+
+        // Tìm các sản phẩm đã được mua trong khoảng thời gian đã xác định
+        const purchasedProducts = await PurchasedProduct.find({
+            'khuvuc.khuvucId': khuvucId,
+            timestamp: { $gte: startOfToday, $lte: endOfToday }
+        })
+            .sort({ quantityInDay: -1 }) // Sắp xếp theo số lượng bán trong ngày
+            .limit(15); // Giới hạn kết quả là 15 sản phẩm
+
+        // Kiểm tra xem có sản phẩm nào không
+        if (purchasedProducts.length === 0) {
+            return res.status(404).json({ message: 'Không có sản phẩm bán chạy trong ngày' });
         }
+
         res.status(200).json(purchasedProducts);
-    },
+    }
+    ,
     //Go Product Card tu san pham ban chay
     goProductBestSellerInDay: async (req, res) => {
         const restaurantId = req.params.restaurantId;
@@ -495,7 +512,7 @@ const restaurantController = {
                 startDate.setHours(0, 0, 0, 0);
                 const endDate = new Date(startDate);
                 endDate.setDate(endDate.getDate() + 1); // Thêm 1 ngày để bao gồm ngày hôm sau
-              
+
                 // Tìm hóa đơn trong ngày đó
                 const orders = await Order.find({
                     restaurantId: id,
@@ -503,9 +520,9 @@ const restaurantController = {
                         $gte: startDate,
                         $lt: endDate
                     },
-                    "status.name": { $nin: ["Đang xử lý","Chấp nhận", "Đã huỷ"] }
+                    "status.name": { $nin: ["Đang xử lý", "Chấp nhận", "Đã huỷ"] }
                 });
-            
+
 
                 // Tính tổng doanh thu
                 totalRevenue = orders.reduce((total, order) => total + order.totalAmount - order.transportFee, 0);
@@ -521,7 +538,7 @@ const restaurantController = {
                         $gte: startDate,
                         $lt: endDate
                     },
-                    "status.name": { $nin: ["Đang xử lý","Chấp nhận", "Đã huỷ"] }
+                    "status.name": { $nin: ["Đang xử lý", "Chấp nhận", "Đã huỷ"] }
 
                 });
 
@@ -539,7 +556,7 @@ const restaurantController = {
                         $gte: startDate,
                         $lt: endDate
                     },
-                    "status.name": { $nin: ["Đang xử lý","Chấp nhận", "Đã huỷ"] }
+                    "status.name": { $nin: ["Đang xử lý", "Chấp nhận", "Đã huỷ"] }
 
                 });
 
