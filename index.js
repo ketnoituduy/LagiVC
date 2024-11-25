@@ -13,7 +13,7 @@ const cors = require('cors');
 
 const limiter = rateLimit({
     windowMs: 10 * 60 * 1000, // 10 minutes
-    max: 500, // số lượng request tối đa trong windowMs cho mỗi IP
+    max: 1500, // số lượng request tối đa trong windowMs cho mỗi IP
     message: "Quá nhiều yêu cầu từ IP của bạn, vui lòng thử lại sau một thời gian."
   });
 app.use(helmet());
