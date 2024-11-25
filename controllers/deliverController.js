@@ -107,17 +107,20 @@ const deliverController = {
 
             if (mode === 'date') {
                 const startDate = new Date(date); // Đối tượng Date từ chuỗi
-                // Đặt thời gian của startDate về 0 giờ 0 phút 0 giây
+               
                 startDate.setHours(0, 0, 0, 0);
+                // startDate.setUTCHours(startDate.getUTCHours() + 7);
                 const endDate = new Date(startDate);
-                endDate.setDate(endDate.getDate() + 1); // Thêm 1 ngày để bao gồm ngày hôm sau
-
+                endDate.setHours(23, 59, 59, 999); // Thêm 1 ngày để bao gồm ngày hôm sau
+                // Chuyển đổi về UTC để truy vấn
+                const startDateUTC = new Date(startDate.getTime() - (7 * 60 * 60 * 1000)); // 0h VN về UTC
+                const endDateUTC = new Date(endDate.getTime() - (7 * 60 * 60 * 1000)); // 23h59m59s VN về UTC
                 // Tìm hóa đơn trong ngày đó
                 const orders = await Order.find({
                     deliveryId: id,
                     createdAt: {
-                        $gte: startDate,
-                        $lt: endDate
+                        $gte: startDateUTC,
+                        $lt: endDateUTC
                     },
                     "status.name": "Đã giao"
 
