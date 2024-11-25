@@ -111,15 +111,15 @@ const restaurantController = {
 
 
     },
-    //san pham ban chay trong ngay
     // Sản phẩm bán chạy trong ngày
     bestSellerInDay: async (req, res) => {
-        // Thiết lập thời gian bắt đầu và kết thúc cho ngày hôm nay
+        // Thiết lập thời gian bắt đầu và kết thúc cho ngày hôm nay theo giờ Việt Nam (UTC+7)
         const startOfToday = new Date();
-        startOfToday.setHours(0, 0, 0, 0); // 0h ngày hôm nay
+        startOfToday.setUTCHours(0, 0, 0, 0); // 0h UTC, sẽ tương đương với 7h VN
+        startOfToday.setUTCHours(startOfToday.getUTCHours() - 7); // Điều chỉnh về giờ UTC-7 để là 0h VN
 
         const endOfToday = new Date(startOfToday);
-        endOfToday.setDate(endOfToday.getDate() + 1);
+        endOfToday.setUTCHours(23, 59, 59, 999); // 23h59m59s999ms ngày hôm nay
 
         const khuvucId = req.params.khuvucId;
 
@@ -138,6 +138,7 @@ const restaurantController = {
 
         res.status(200).json(purchasedProducts);
     }
+
     ,
     //Go Product Card tu san pham ban chay
     goProductBestSellerInDay: async (req, res) => {
@@ -509,9 +510,10 @@ const restaurantController = {
             if (mode === 'date') {
                 const startDate = new Date(date); // Đối tượng Date từ chuỗi
                 // Đặt thời gian của startDate về 0 giờ 0 phút 0 giây
-                startDate.setHours(0, 0, 0, 0);
+                startDate.setUTCHours(0, 0, 0, 0);
+                startDate.setUTCHours(startDate.getUTCHours() - 7);
                 const endDate = new Date(startDate);
-                endDate.setDate(endDate.getDate() + 1); // Thêm 1 ngày để bao gồm ngày hôm sau
+                endDate.setUTCHours(23, 59, 59, 999); // Thêm 1 ngày để bao gồm ngày hôm sau
 
                 // Tìm hóa đơn trong ngày đó
                 const orders = await Order.find({
