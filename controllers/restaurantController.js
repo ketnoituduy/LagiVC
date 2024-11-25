@@ -115,7 +115,7 @@ const restaurantController = {
     bestSellerInDay: async (req, res) => {
         // Thiết lập thời gian bắt đầu và kết thúc cho ngày hôm nay theo giờ Việt Nam (UTC+7)
         const startOfToday = new Date();
-        startOfToday.setUTCHours(0, 0, 0, 0); // 0h UTC, sẽ tương đương với 7h VN
+        startOfToday.setUTCHours(-7, 0, 0, 0); // 0h UTC, sẽ tương đương với 7h VN
         //startOfToday.setUTCHours(startOfToday.getUTCHours() + 7); // Điều chỉnh về giờ UTC-7 để là 0h VN
 
         const endOfToday = new Date(startOfToday);
@@ -510,7 +510,7 @@ const restaurantController = {
             if (mode === 'date') {
                 const startDate = new Date(date); // Đối tượng Date từ chuỗi
                 // Đặt thời gian của startDate về 0 giờ 0 phút 0 giây
-                startDate.setUTCHours(0, 0, 0, 0);
+                startDate.setUTCHours(-7, 0, 0, 0);
                // startDate.setUTCHours(startDate.getUTCHours() + 7);
                 const endDate = new Date(startDate);
                 endDate.setUTCHours(23, 59, 59, 999); // Thêm 1 ngày để bao gồm ngày hôm sau
