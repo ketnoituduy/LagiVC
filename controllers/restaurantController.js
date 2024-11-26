@@ -121,8 +121,8 @@ const restaurantController = {
         endOfToday.setHours(23, 59, 59, 999); // 23h59m59s999ms ngày hôm nay
 
         // Chuyển đổi giờ từ VN về UTC để truy vấn
-        const startOfTodayUTC = new Date(startOfToday.getTime() - (7 * 60 * 60 * 1000)); // Chuyển đổi 0h VN về UTC
-        const endOfTodayUTC = new Date(endOfToday.getTime() - (7 * 60 * 60 * 1000)); // Chuyển đổi 23h59m59s VN về UTC
+        const startOfTodayUTC = new Date(startOfToday.getTime() - (7 * 60 * 60 * 1000));
+        const endOfTodayUTC = new Date(endOfToday.getTime()); // Chỉ cần chuyển đổi thời điểm bắt đầu, thời điểm kết thúc đã là cuối ngày
 
         const khuvucId = req.params.khuvucId;
 
@@ -520,7 +520,7 @@ const restaurantController = {
                 endDate.setHours(23, 59, 59, 999); // Thêm 1 ngày để bao gồm ngày hôm sau
                 // Chuyển đổi về UTC để truy vấn
                 const startDateUTC = new Date(startDate.getTime() - (7 * 60 * 60 * 1000)); // 0h VN về UTC
-                const endDateUTC = new Date(endDate.getTime() - (7 * 60 * 60 * 1000)); // 23h59m59s VN về UTC
+                const endDateUTC = new Date(endDate.getTime()); // 23h59m59s VN về UTC
 
                 // Tìm hóa đơn trong ngày đó
                 const orders = await Order.find({
