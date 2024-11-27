@@ -498,13 +498,13 @@ const restaurantController = {
         }
     },
 
-    // Lấy dữ liệu doanh thu từ cửa hàng
+    //lay du lieu doanh thu tu cua hang
     getRevenueRestaurant: async (req, res) => {
         try {
             const id = req.params.id;
             const mode = req.params.mode;
-            const date = new Date(req.params.date); // Giả định date được truyền vào là một chuỗi có thể chuyển đổi thành Date
-            const year = parseInt(req.params.year, 10); // Chuyển đổi kiểu chuỗi sang số
+            const date = new Date(req.params.date).toLocaleDateString();
+            const year = parseInt(req.params.year, 10);  // Chuyển đổi kiểu chuỗi sang số
             const month = parseInt(req.params.month, 10); // Chuyển đổi kiểu chuỗi sang số
             let totalRevenue = 0;
 
@@ -512,11 +512,12 @@ const restaurantController = {
                 // Thiết lập múi giờ Việt Nam
                 const vietNamTimezone = 'Asia/Ho_Chi_Minh';
 
-                // Lấy thời điểm bắt đầu và kết thúc của ngày hôm đó theo giờ Việt Nam
+                // Lấy thời điểm bắt đầu và kết thúc của ngày hôm nay theo giờ Việt Nam
                 const startOfToday = moment(date).tz(vietNamTimezone).startOf('day').toDate();
                 const endOfToday = moment(date).tz(vietNamTimezone).endOf('day').toDate();
+               
 
-                // Lấy ra hóa đơn trong ngày đó
+                // Tìm hóa đơn trong ngày đó
                 const orders = await Order.find({
                     restaurantId: id,
                     createdAt: {
@@ -525,6 +526,7 @@ const restaurantController = {
                     },
                     "status.name": { $nin: ["Đang xử lý", "Chấp nhận", "Đã huỷ"] }
                 });
+
 
                 // Tính tổng doanh thu
                 totalRevenue = orders.reduce((total, order) => total + order.totalAmount - order.transportFee, 0);
@@ -541,6 +543,7 @@ const restaurantController = {
                         $lt: endDate
                     },
                     "status.name": { $nin: ["Đang xử lý", "Chấp nhận", "Đã huỷ"] }
+
                 });
 
                 // Tính tổng doanh thu
@@ -558,6 +561,7 @@ const restaurantController = {
                         $lt: endDate
                     },
                     "status.name": { $nin: ["Đang xử lý", "Chấp nhận", "Đã huỷ"] }
+
                 });
 
                 // Tính tổng doanh thu
@@ -572,7 +576,6 @@ const restaurantController = {
             res.status(500).json({ message: 'Internal Server Error' });
         }
     }
-
 
 
 }
