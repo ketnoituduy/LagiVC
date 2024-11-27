@@ -138,8 +138,8 @@ const deliverController = {
                 const ordersGrab = await OrderGrab.find({
                     deliveryId: id,
                     createdAt: {
-                        $gte: startDate,
-                        $lt: endDate
+                        $gte: startOfToday,
+                        $lt: endOfToday
                     },
                     "status.name": "Hoàn tất"
                 });
