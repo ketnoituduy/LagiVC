@@ -5,6 +5,7 @@ const PurchasedProduct = require('../models/purchasedProduct');
 const Review = require('../models/review');
 const haversine = require('haversine');
 const Order = require('../models/order');
+const moment = require('moment-timezone');
 
 const restaurantController = {
     //lay du lieu cac nha hang danh gia cao
@@ -113,32 +114,28 @@ const restaurantController = {
     },
     // Sản phẩm bán chạy trong ngày
     bestSellerInDay: async (req, res) => {
-        // Thiết lập thời gian bắt đầu và kết thúc cho ngày hôm nay theo giờ Việt Nam (UTC+7)
-        const startOfToday = new Date(); // Lấy thời điểm hiện tại
-        startOfToday.setHours(0, 0, 0, 0); // 0h VN (tương đương với 5h UTC)
-
-        const endOfToday = new Date(startOfToday); // Giữ lại ngày bắt đầu
-        endOfToday.setHours(23, 59, 59, 999); // 23h59m59s999ms ngày hôm nay
-
-        // Chuyển đổi giờ từ VN về UTC để truy vấn
-        const startOfTodayUTC = new Date(startOfToday.getTime() - (7 * 60 * 60 * 1000));
-        const endOfTodayUTC = new Date(endOfToday.getTime()); // Chỉ cần chuyển đổi thời điểm bắt đầu, thời điểm kết thúc đã là cuối ngày
-
         const khuvucId = req.params.khuvucId;
-
+    
+        // Thiết lập múi giờ Việt Nam
+        const vietNamTimezone = 'Asia/Ho_Chi_Minh';
+    
+        // Lấy thời điểm bắt đầu và kết thúc của ngày hôm nay theo giờ Việt Nam
+        const startOfToday = moment().tz(vietNamTimezone).startOf('day').toDate();
+        const endOfToday = moment().tz(vietNamTimezone).endOf('day').toDate();
+    
         // Tìm các sản phẩm đã được mua trong khoảng thời gian đã xác định
         const purchasedProducts = await PurchasedProduct.find({
             'khuvuc.khuvucId': khuvucId,
-            timestamp: { $gte: startOfTodayUTC, $lte: endOfTodayUTC }
+            timestamp: { $gte: startOfToday, $lte: endOfToday }
         })
-            .sort({ quantityInDay: -1 }) // Sắp xếp theo số lượng bán trong ngày
-            .limit(15); // Giới hạn kết quả là 15 sản phẩm
-
+            .sort({ quantityInDay: -1 })
+            .limit(15);
+    
         // Kiểm tra xem có sản phẩm nào không
         if (purchasedProducts.length === 0) {
             return res.status(404).json({ message: 'Không có sản phẩm bán chạy trong ngày' });
         }
-
+    
         res.status(200).json(purchasedProducts);
     }
 
