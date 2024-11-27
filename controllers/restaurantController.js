@@ -115,14 +115,14 @@ const restaurantController = {
     // Sản phẩm bán chạy trong ngày
     bestSellerInDay: async (req, res) => {
         const khuvucId = req.params.khuvucId;
-    
+
         // Thiết lập múi giờ Việt Nam
         const vietNamTimezone = 'Asia/Ho_Chi_Minh';
-    
+
         // Lấy thời điểm bắt đầu và kết thúc của ngày hôm nay theo giờ Việt Nam
         const startOfToday = moment().tz(vietNamTimezone).startOf('day').toDate();
         const endOfToday = moment().tz(vietNamTimezone).endOf('day').toDate();
-    
+
         // Tìm các sản phẩm đã được mua trong khoảng thời gian đã xác định
         const purchasedProducts = await PurchasedProduct.find({
             'khuvuc.khuvucId': khuvucId,
@@ -130,12 +130,12 @@ const restaurantController = {
         })
             .sort({ quantityInDay: -1 })
             .limit(15);
-    
+
         // Kiểm tra xem có sản phẩm nào không
         if (purchasedProducts.length === 0) {
             return res.status(404).json({ message: 'Không có sản phẩm bán chạy trong ngày' });
         }
-    
+
         res.status(200).json(purchasedProducts);
     }
 
@@ -509,22 +509,28 @@ const restaurantController = {
             let totalRevenue = 0;
 
             if (mode === 'date') {
-                const startDate = new Date(date); // Đối tượng Date từ chuỗi
-                // Đặt thời gian của startDate về 0 giờ 0 phút 0 giây
-                startDate.setHours(0, 0, 0, 0);
-                // startDate.setUTCHours(startDate.getUTCHours() + 7);
-                const endDate = new Date(startDate);
-                endDate.setHours(23, 59, 59, 999); // Thêm 1 ngày để bao gồm ngày hôm sau
-                // Chuyển đổi về UTC để truy vấn
-                const startDateUTC = new Date(startDate.getTime() - (7 * 60 * 60 * 1000)); // 0h VN về UTC
-                const endDateUTC = new Date(endDate.getTime()); // 23h59m59s VN về UTC
+                // Thiết lập múi giờ Việt Nam
+                const vietNamTimezone = 'Asia/Ho_Chi_Minh';
+
+                // Lấy thời điểm bắt đầu và kết thúc của ngày hôm nay theo giờ Việt Nam
+                const startOfToday = moment().tz(vietNamTimezone).startOf('day').toDate();
+                const endOfToday = moment().tz(vietNamTimezone).endOf('day').toDate();
+                // const startDate = new Date(date); // Đối tượng Date từ chuỗi
+                // // Đặt thời gian của startDate về 0 giờ 0 phút 0 giây
+                // startDate.setHours(0, 0, 0, 0);
+                // // startDate.setUTCHours(startDate.getUTCHours() + 7);
+                // const endDate = new Date(startDate);
+                // endDate.setHours(23, 59, 59, 999); // Thêm 1 ngày để bao gồm ngày hôm sau
+                // // Chuyển đổi về UTC để truy vấn
+                // const startDateUTC = new Date(startDate.getTime() - (7 * 60 * 60 * 1000)); // 0h VN về UTC
+                // const endDateUTC = new Date(endDate.getTime()); // 23h59m59s VN về UTC
 
                 // Tìm hóa đơn trong ngày đó
                 const orders = await Order.find({
                     restaurantId: id,
                     createdAt: {
-                        $gte: startDateUTC,
-                        $lt: endDateUTC
+                        $gte: startOfToday,
+                        $lt: endOfToday
                     },
                     "status.name": { $nin: ["Đang xử lý", "Chấp nhận", "Đã huỷ"] }
                 });
