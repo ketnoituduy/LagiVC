@@ -112,8 +112,8 @@ const deliverController = {
                 const vietNamTimezone = 'Asia/Ho_Chi_Minh';
 
                 // Lấy thời điểm bắt đầu và kết thúc của ngày hôm nay theo giờ Việt Nam
-                const startOfToday = moment().tz(vietNamTimezone).startOf('day').toDate();
-                const endOfToday = moment().tz(vietNamTimezone).endOf('day').toDate();
+                const startOfToday = moment(date).tz(vietNamTimezone).startOf('day').toDate();
+                const endOfToday = moment(date).tz(vietNamTimezone).endOf('day').toDate();
                 // const startDate = new Date(date); // Đối tượng Date từ chuỗi
 
                 // startDate.setHours(0, 0, 0, 0);
