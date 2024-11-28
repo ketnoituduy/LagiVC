@@ -100,7 +100,7 @@ const deliverController = {
         try {
             const id = req.params.id;
             const mode = req.params.mode;
-            const date = new Date(req.params.date).toLocaleDateString();
+            const date = new Date(req.params.date).toLocaleString();
             const year = parseInt(req.params.year, 10);  // Chuyển đổi kiểu chuỗi sang số
             const month = parseInt(req.params.month, 10); // Chuyển đổi kiểu chuỗi sang số
             let totalRevenue = 0;
