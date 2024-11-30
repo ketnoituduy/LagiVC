@@ -73,10 +73,10 @@ const authController = {
         const otp = Math.random().toString().slice(-6);
         const user = await User.findOne({ phone: phone });
         if (!user) {
-            const newUser = new User({ phone, otp });
-            
-            await newUser.save();
-            console.log('newUser',newUser);
+            // const newUser = new User({ phone, otp });
+            // await newUser.save();
+            // console.log('newUser',newUser);
+            console.log('phone',phone,otp);
              // Gửi OTP qua Twilio
              const accountSid = process.env.TWILIO_ACCOUNT_SID;
              const authToken = process.env.TWILIO_AUTH_TOKEN;
@@ -84,8 +84,6 @@ const authController = {
              const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
              console.log('twilioClient',twilioClient);
             try {
-               
-
                 await twilioClient.messages.create({
                     body: `Your OTP code is: ${otp}`,
                     from: twilioPhoneNumber,
