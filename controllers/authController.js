@@ -71,10 +71,13 @@ const authController = {
         console.log('phoneee', phone);
         // Tạo OTP ngẫu nhiên (6 chữ số)
         const otp = Math.random().toString().slice(-6);
-        const user = User.findOne({ phone: phone });
+        const user = await User.findOne({ phone: phone });
+        console.log('user',user);
         if (!user) {
             const newUser = new User({ phone, otp });
+            
             await newUser.save();
+            console.log('newUser',newUser);
              // Gửi OTP qua Twilio
              const accountSid = process.env.TWILIO_ACCOUNT_SID;
              const authToken = process.env.TWILIO_AUTH_TOKEN;
