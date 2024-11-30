@@ -66,56 +66,56 @@ const sendGetPasswordEmail = async (email, password) => {
 }
 
 const authController = {
-    // registerphone: async (req, res) => {
-    //     const { phone } = req.body;
+    registerphone: async (req, res) => {
+        const { phone } = req.body;
 
-    //     // Tạo OTP ngẫu nhiên (6 chữ số)
-    //     const otp = Math.random().toString().slice(-6);
+        // Tạo OTP ngẫu nhiên (6 chữ số)
+        const otp = Math.random().toString().slice(-6);
 
-    //     const newUser = new User({ phone, otp });
+        const newUser = new User({ phone, otp });
 
-    //     try {
-    //         await newUser.save();
+        try {
+            await newUser.save();
 
-    //         // Gửi OTP qua Twilio
-    //         const accountSid = process.env.TWILIO_ACCOUNT_SID;
-    //         const authToken = process.env.TWILIO_AUTH_TOKEN;
-    //         const twilioClient = twilio(accountSid, authToken);
-    //         const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
+            // Gửi OTP qua Twilio
+            const accountSid = process.env.TWILIO_ACCOUNT_SID;
+            const authToken = process.env.TWILIO_AUTH_TOKEN;
+            const twilioClient = twilio(accountSid, authToken);
+            const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
 
-    //         await twilioClient.messages.create({
-    //             body: `Your OTP code is: ${otp}`,
-    //             from: twilioPhoneNumber,
-    //             to: phone
-    //         });
+            await twilioClient.messages.create({
+                body: `Your OTP code is: ${otp}`,
+                from: twilioPhoneNumber,
+                to: phone
+            });
 
-    //         res.status(200).json({ success: true, message: 'OTP sent successfully!' });
-    //     } catch (error) {
-    //         res.status(500).json({ success: false, error: error.message });
-    //     }
-    // },
-    // verifyphone: async (req, res) => {
-    //     const { phone, otp } = req.body;
+            res.status(200).json({ success: true, message: 'OTP sent successfully!' });
+        } catch (error) {
+            res.status(500).json({ success: false, error: error.message });
+        }
+    },
+    verifyphone: async (req, res) => {
+        const { phone, otp } = req.body;
 
-    //     try {
-    //         const user = await User.findOne({ phone });
+        try {
+            const user = await User.findOne({ phone });
 
-    //         if (!user) {
-    //             return res.status(400).json({ success: false, message: 'User not found' });
-    //         }
+            if (!user) {
+                return res.status(400).json({ success: false, message: 'User not found' });
+            }
 
-    //         if (user.otp !== otp) {
-    //             return res.status(400).json({ success: false, message: 'Invalid OTP' });
-    //         }
+            if (user.otp !== otp) {
+                return res.status(400).json({ success: false, message: 'Invalid OTP' });
+            }
 
-    //         user.verified = true;
-    //         await user.save();
+            user.verified = true;
+            await user.save();
 
-    //         res.status(200).json({ success: true, message: 'User successfully verified!' });
-    //     } catch (error) {
-    //         res.status(500).json({ success: false, error: error.message });
-    //     }
-    // },
+            res.status(200).json({ success: true, message: 'User successfully verified!' });
+        } catch (error) {
+            res.status(500).json({ success: false, error: error.message });
+        }
+    },
     //dang ky tai khoan email
     register: async (req, res) => {
         try {

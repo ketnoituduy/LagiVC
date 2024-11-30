@@ -10,9 +10,9 @@ authRouter.post('/verifiedEmail/:email', authController.sendEmailVerification);
 authRouter.post('/getPassword/:email', authController.sendPasswordEmail);
 // dang nhap tai khoan
 authRouter.post('/login',authController.loginAccount);
-// // dang ky bang so dien thoai
-// authRouter.post('/registerphone',authController.registerphone);
-// //xac nhan OTP
-// authRouter.post('/verifyphone',authController.verifyphone);
+// dang ky bang so dien thoai
+authRouter.post('/registerphone',authController.registerphone);
+//xac nhan OTP
+authRouter.post('/verifyphone',authController.verifyphone);
 
 module.exports = authRouter;

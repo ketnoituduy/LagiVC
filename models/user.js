@@ -26,15 +26,12 @@ const userSchema = new mongoose.Schema({
         type:Boolean,
         default:false
     },
-    // phone: {
-    //     type: String,
-    //     required: true,
-    //     unique: true,
-    // },
-    // otp: {
-    //     type: String,
-    //     required: true,
-    // }
+    phone: {
+        type: String,
+    },
+    otp: {
+        type: String,
+    }
 })
 
 const User = mongoose.model('User',userSchema);
