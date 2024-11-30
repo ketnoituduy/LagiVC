@@ -17,7 +17,7 @@ const limiter = rateLimit({
     message: "Quá nhiều yêu cầu từ IP của bạn, vui lòng thử lại sau một thời gian."
   });
 app.use(helmet());
-app.use(limiter);
+// app.use(limiter);
 
 const User = require('./models/user');
 const Restaurant = require('./models/restaurant');
