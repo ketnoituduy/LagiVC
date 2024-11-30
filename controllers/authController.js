@@ -68,31 +68,35 @@ const sendGetPasswordEmail = async (email, password) => {
 const authController = {
     registerphone: async (req, res) => {
         const { phone } = req.body;
-        console.log('phoneee',phone);
+        console.log('phoneee', phone);
         // Tạo OTP ngẫu nhiên (6 chữ số)
         const otp = Math.random().toString().slice(-6);
-
-        const newUser = new User({ phone, otp });
-
-        try {
+        const user = User.findOne({ phone: phone });
+        if (!user) {
+            const newUser = new User({ phone, otp });
             await newUser.save();
+             // Gửi OTP qua Twilio
+             const accountSid = process.env.TWILIO_ACCOUNT_SID;
+             const authToken = process.env.TWILIO_AUTH_TOKEN;
+             const twilioClient = twilio(accountSid, authToken);
+             const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
+             console.log('twilioClient',twilioClient);
+            try {
+               
 
-            // Gửi OTP qua Twilio
-            const accountSid = process.env.TWILIO_ACCOUNT_SID;
-            const authToken = process.env.TWILIO_AUTH_TOKEN;
-            const twilioClient = twilio(accountSid, authToken);
-            const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
+                await twilioClient.messages.create({
+                    body: `Your OTP code is: ${otp}`,
+                    from: twilioPhoneNumber,
+                    to: phone
+                });
 
-            await twilioClient.messages.create({
-                body: `Your OTP code is: ${otp}`,
-                from: twilioPhoneNumber,
-                to: phone
-            });
-
-            res.status(200).json({ success: true, message: 'OTP sent successfully!' });
-        } catch (error) {
-            res.status(500).json({ success: false, error: error.message });
+                res.status(200).json({ success: true, message: 'OTP sent successfully!' });
+            } catch (error) {
+                res.status(500).json({ success: false, error: error.message });
+            }
         }
+
+
     },
     verifyphone: async (req, res) => {
         const { phone, otp } = req.body;
