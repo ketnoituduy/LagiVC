@@ -72,7 +72,6 @@ const authController = {
         // Tạo OTP ngẫu nhiên (6 chữ số)
         const otp = Math.random().toString().slice(-6);
         const user = await User.findOne({ phone: phone });
-        console.log('user',user);
         if (!user) {
             const newUser = new User({ phone, otp });
             
