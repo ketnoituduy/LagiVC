@@ -21,19 +21,19 @@ const userSchema = new mongoose.Schema({
     },
     listLocation:{type:Array},
     location:Object,
-    // location:{
-    //     address:{type:String},
-    //     coordinates:[Number],
-    //     id:{type:Number},
-    //     index:{type:Number},
-    //     latitude:{type:Number},
-    //     longitude:{type:Number},
-    //     streetAddress:{type:String}
-    // },
     socketId:String,
     admin:{
         type:Boolean,
         default:false
+    },
+    phone: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    otp: {
+        type: String,
+        required: true,
     }
 })
 
