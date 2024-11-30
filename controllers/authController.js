@@ -68,28 +68,26 @@ const sendGetPasswordEmail = async (email, password) => {
 const authController = {
     registerphone: async (req, res) => {
         const { phone } = req.body;
-        console.log('phoneee', phone);
         // Tạo OTP ngẫu nhiên (6 chữ số)
         const otp = Math.random().toString().slice(-6);
         const user = await User.findOne({ phone: phone });
         if (!user) {
-            // const newUser = new User({ phone, otp });
-            // await newUser.save();
-            // console.log('newUser',newUser);
-            console.log('phone',phone,otp);
+            const newUser = new User({ phone, otp });
+            await newUser.save();
+            console.log('newUser',newUser);
              // Gửi OTP qua Twilio
              const accountSid = process.env.TWILIO_ACCOUNT_SID;
              const authToken = process.env.TWILIO_AUTH_TOKEN;
              const twilioClient = twilio(accountSid, authToken);
              const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
-             console.log('twilioClient',twilioClient);
+             console.log('twilioPhoneNumber',twilioPhoneNumber);
             try {
                 await twilioClient.messages.create({
                     body: `Your OTP code is: ${otp}`,
                     from: twilioPhoneNumber,
                     to: phone
                 });
-
+                console.log('hellooooo Twilio');
                 res.status(200).json({ success: true, message: 'OTP sent successfully!' });
             } catch (error) {
                 res.status(500).json({ success: false, error: error.message });
