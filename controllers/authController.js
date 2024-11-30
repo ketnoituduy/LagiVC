@@ -68,7 +68,7 @@ const sendGetPasswordEmail = async (email, password) => {
 const authController = {
     registerphone: async (req, res) => {
         const { phone } = req.body;
-
+        console.log('phoneee',phone);
         // Tạo OTP ngẫu nhiên (6 chữ số)
         const otp = Math.random().toString().slice(-6);
 
