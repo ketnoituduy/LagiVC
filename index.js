@@ -226,7 +226,7 @@ app.get('/:khuvucId/categories', async (req, res) => {
     const id = req.params.khuvucId;
     console.log('aassddd',id);
     Region.findById(id).then(data => {
-        console.log('categories',data.categories);
+        console.log('categories',data);
         res.status(200).json(data.categories);
     }).catch(err => {
         res.status(500).json({ message: 'loi truyen categories' });
