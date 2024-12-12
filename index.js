@@ -214,9 +214,18 @@ app.get('/parameters', async (req, res) => {
 })
 
 //lay du lieu categories
-app.get('/categories', async (req, res) => {
-    Category.find().then(data => {
-        res.status(200).json(data);
+// app.get('/categories', async (req, res) => {
+//     Category.find().then(data => {
+//         res.status(200).json(data);
+//     }).catch(err => {
+//         res.status(500).json({ message: 'loi truyen categories' });
+//     })
+// })
+//lay du lieu categories
+app.get('/khuvucId/categories', async (req, res) => {
+    const id = req.params.khuvucId
+    Region.findById(id).then(data => {
+        res.status(200).json(data.categories);
     }).catch(err => {
         res.status(500).json({ message: 'loi truyen categories' });
     })
