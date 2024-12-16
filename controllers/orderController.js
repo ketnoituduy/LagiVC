@@ -92,6 +92,7 @@ const orderController = {
         const perPage = 10;
         const skip = (pageNumber - 1) * perPage;
         const orders = await Order.find().sort({ _id: -1 }).skip(skip).limit(perPage);
+        console.log('helooo order Deliver',orders);
         if (orders.length === 0) {
             return res.status(204).json({ message: 'khong co hoa don' });
         }
