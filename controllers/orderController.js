@@ -91,7 +91,12 @@ const orderController = {
         const pageNumber = req.query.page;
         const perPage = 10;
         const skip = (pageNumber - 1) * perPage;
-        const orders = await Order.find().sort({ _id: -1 }).skip(skip).limit(perPage);
+        const orders = await Order.find({
+            $or: [
+                { deliveryId: deliverId },
+                { fullScanDriver: true }
+            ]
+        }).sort({ _id: -1 }).skip(skip).limit(perPage);
         if (orders.length === 0) {
             return res.status(204).json({ message: 'khong co hoa don' });
         }
@@ -99,8 +104,8 @@ const orderController = {
             && ((order.deliveryId === deliverId &&
                 order.vehicleId === vehicleId) || (order.vehicleId === vehicleId &&
                     order.status.name === 'Chấp nhận' && order.fullScanDriver === true))));
-        console.log('helooo order Deliver',ordersFilter.length);
-            
+        console.log('helooo order Deliver', ordersFilter.length);
+
         res.status(200).json(ordersFilter);
     },
     //nhan orders grab tu tai xe
