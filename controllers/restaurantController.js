@@ -68,9 +68,9 @@ const restaurantController = {
     getDanhmucduocchon: async(req,res) =>{
         const khuvucId = req.params.khuvucId;
         const categoryId = req.params.categoryId;
+        console.log('helooo danhmucduocchon',khuvucId,categoryId);
         try{
             const purchasedProduct = await PurchasedProduct.find({'category.categoryId':categoryId,'khuvuc.khuvucId':khuvucId}).sort({quantity:-1}).limit(10);
-            console.log('helooo danhmucduocchon',purchasedProduct);
             res.status(200).json(purchasedProduct);
         }
         catch(error){
