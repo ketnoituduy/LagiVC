@@ -64,6 +64,19 @@ const restaurantController = {
             res.status(500).json({ error: error.message });
         }
     },
+    //Lay du lieu cua hang duoc chon tu danh muc
+    getDanhmucduocchon: async(req,res) =>{
+        const khuvucId = req.params.khuvucId;
+        const categoryId = req.params.categoryId;
+        try{
+            const purchasedProduct = await PurchasedProduct.find({'category.categoryId':categoryId,'khuvuc.khuvucId':khuvucId}).sort({quantity:-1}).limit(10);
+            console.log('helooo danhmucduocchon',purchasedProduct);
+            res.status(200).json(purchasedProduct);
+        }
+        catch(error){
+            res.status(500).json({error:error.message});
+        }
+    },
     //Tim kiem cua hang
     searchRestaurant: async (req, res) => {
         const khuvucId = req.params.khuvucId;

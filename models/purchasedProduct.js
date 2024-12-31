@@ -16,6 +16,7 @@ const purchasedProductSchema = new mongoose.Schema({
     quantityInDay:Number,
     restaurantId:String,
     restaurantName:String,
+    restaurantImage:String,
     timestamp:Date,
     productId:String
 })

@@ -105,7 +105,6 @@ const orderController = {
                 order.vehicleId === vehicleId) || (order.vehicleId === vehicleId &&
                     order.status.name === 'Chấp nhận' && order.fullScanDriver === true))));
         console.log('helooo order Deliver', ordersFilter.length);
-
         res.status(200).json(ordersFilter);
     },
     //nhan orders grab tu tai xe
@@ -304,6 +303,7 @@ const orderController = {
                     purchasedProduct.khuvuc = order.khuvuc;
                     purchasedProduct.category = item.category;
                     purchasedProduct.restaurantName = order.restaurantName;
+                    purchasedProduct.restaurantImage = order.restaurantImage
                     await purchasedProduct.save();
                 }
                 else {
@@ -318,6 +318,7 @@ const orderController = {
                         khuvuc: order.khuvuc,
                         category: item.category,
                         restaurantName: order.restaurantName,
+                        restaurantImage: order.restaurantImage,
                         restaurantId: order.restaurantId
                     }
                     const newPurchasedProduct = new PurchasedProduct(data);
