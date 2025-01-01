@@ -68,12 +68,12 @@ const restaurantController = {
     //Lay du lieu cua hang duoc chon tu danh muc
     getDanhmucduocchon: async (req, res) => {
         const khuvucId = req.params.khuvucId;
-        console.log('helooo danhmucduocchon', khuvucId);
         try {
             // const purchasedProduct = await PurchasedProduct.find({'category.categoryId':categoryId,'khuvuc.khuvucId':khuvucId}).sort({quantity:-1}).limit(10);
             // res.status(200).json(purchasedProduct);
             const region = await Region.findById(khuvucId);
-            const danhmucduocchon = region._doc.danhmucduocchon;
+            const danhmucduocchon = region.danhmucduocchon;
+            console.log('danhmucduocchon',danhmucduocchon);
             let _danhmucduocchon = [];
             for (const dm of danhmucduocchon) {
                 const purchasedProduct = await PurchasedProduct.find({ 'category.categoryId': dm._id, 'khuvuc.khuvucId': khuvucId }).sort({ quantity: -1 }).limit(10);
