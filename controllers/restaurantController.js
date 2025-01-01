@@ -74,6 +74,7 @@ const restaurantController = {
 
             // Tạo danh sách các truy vấn
             const queries = danhmucduocchon.map(dm => {
+                console.log('danhmucduocchon',dm);
                 return PurchasedProduct.find({
                     'category.categoryId': dm._id,
                     'khuvuc.khuvucId': khuvucId
