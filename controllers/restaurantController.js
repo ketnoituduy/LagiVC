@@ -74,7 +74,6 @@ const restaurantController = {
             
             // Tạo danh sách các truy vấn
             const queries = danhmucduocchon.map(dm => {
-                console.log('danhmucduocchon',dm);
                 return PurchasedProduct.findOne({ 
                     'category.categoryId': dm._id, 
                     'khuvuc.khuvucId': khuvucId 
@@ -83,6 +82,7 @@ const restaurantController = {
     
             // Thực thi song song các truy vấn
             const _danhmucduocchon = await Promise.all(queries);
+            console.log('daaaaaamuuuuuuuc',_danhmucduocchon);
     
             res.status(200).json(_danhmucduocchon);
         } catch (error) {
