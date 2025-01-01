@@ -72,8 +72,8 @@ const restaurantController = {
             // const purchasedProduct = await PurchasedProduct.find({'category.categoryId':categoryId,'khuvuc.khuvucId':khuvucId}).sort({quantity:-1}).limit(10);
             // res.status(200).json(purchasedProduct);
             const region = await Region.findById(khuvucId);
-            const danhmucduocchon = region.danhmucduocchon;
-            console.log('danhmucduocchon',danhmucduocchon);
+            const danhmucduocchon = region._doc.danhmucduocchon;
+            console.log('danhmucduocchon',region,danhmucduocchon);
             let _danhmucduocchon = [];
             for (const dm of danhmucduocchon) {
                 const purchasedProduct = await PurchasedProduct.find({ 'category.categoryId': dm._id, 'khuvuc.khuvucId': khuvucId }).sort({ quantity: -1 }).limit(10);
