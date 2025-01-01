@@ -3,6 +3,7 @@ const Restaurant = require('../models/restaurant');
 const Product = require('../models/product');
 const PurchasedProduct = require('../models/purchasedProduct');
 const Review = require('../models/review');
+const Region = require('../models/region');
 const haversine = require('haversine');
 const Order = require('../models/order');
 const moment = require('moment-timezone');
@@ -65,16 +66,24 @@ const restaurantController = {
         }
     },
     //Lay du lieu cua hang duoc chon tu danh muc
-    getDanhmucduocchon: async(req,res) =>{
+    getDanhmucduocchon: async (req, res) => {
         const khuvucId = req.params.khuvucId;
         const categoryId = req.params.categoryId;
-        console.log('helooo danhmucduocchon',khuvucId,categoryId);
-        try{
-            const purchasedProduct = await PurchasedProduct.find({'category.categoryId':categoryId,'khuvuc.khuvucId':khuvucId}).sort({quantity:-1}).limit(10);
-            res.status(200).json(purchasedProduct);
+        console.log('helooo danhmucduocchon', khuvucId, categoryId);
+        try {
+            // const purchasedProduct = await PurchasedProduct.find({'category.categoryId':categoryId,'khuvuc.khuvucId':khuvucId}).sort({quantity:-1}).limit(10);
+            // res.status(200).json(purchasedProduct);
+            const region = await Region.findById(khuvucId);
+            const danhmucduocchon = region._doc.danhmucduocchon;
+            let _danhmucduocchon = [];
+            for (const dm of danhmucduocchon) {
+                const purchasedProduct = await PurchasedProduct.find({ 'category.categoryId': dm._id, 'khuvuc.khuvucId': khuvucId }).sort({ quantity: -1 }).limit(10);
+                _danhmucduocchon.push(purchasedProduct);
+            }
+            res.status(200).json(_danhmucduocchon);
         }
-        catch(error){
-            res.status(500).json({error:error.message});
+        catch (error) {
+            res.status(500).json({ error: error.message });
         }
     },
     //Tim kiem cua hang
@@ -528,7 +537,7 @@ const restaurantController = {
                 // Lấy thời điểm bắt đầu và kết thúc của ngày hôm nay theo giờ Việt Nam
                 const startOfToday = moment(date).tz(vietNamTimezone).startOf('day').toDate();
                 const endOfToday = moment(date).tz(vietNamTimezone).endOf('day').toDate();
-               
+
 
                 // Tìm hóa đơn trong ngày đó
                 const orders = await Order.find({
