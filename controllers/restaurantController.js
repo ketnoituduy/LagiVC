@@ -70,20 +70,20 @@ const restaurantController = {
         const khuvucId = req.params.khuvucId;
         try {
             const region = await Region.findById(khuvucId);
-            const danhmucduocchon = region.danhmucduocchon; // Không cần truy cập _doc trực tiếp
-
+            const danhmucduocchon = region._doc.danhmucduocchon; // Không cần truy cập _doc trực tiếp
+            
             // Tạo danh sách các truy vấn
             const queries = danhmucduocchon.map(dm => {
                 console.log('danhmucduocchon',dm);
-                return PurchasedProduct.find({
-                    'category.categoryId': dm._id,
-                    'khuvuc.khuvucId': khuvucId
+                return PurchasedProduct.find({ 
+                    'category.categoryId': dm._id, 
+                    'khuvuc.khuvucId': khuvucId 
                 }).sort({ quantity: -1 }).limit(10);
             });
-
+    
             // Thực thi song song các truy vấn
             const _danhmucduocchon = await Promise.all(queries);
-
+    
             res.status(200).json(_danhmucduocchon);
         } catch (error) {
             res.status(500).json({ error: error.message });
