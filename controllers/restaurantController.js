@@ -83,7 +83,7 @@ const restaurantController = {
 
                     // Thêm title vào từng sản phẩm
                     return purchasedProducts.map(product => ({
-                        ...product,
+                        ...product.toObject(),
                         title: dm.title
                     }));
                 });
