@@ -66,6 +66,7 @@ const restaurantController = {
         }
     },
     //Lay du lieu cua hang duoc chon tu danh muc
+    // Lấy dữ liệu cửa hàng được chọn từ danh mục
     getDanhmucduocchon: async (req, res) => {
         const khuvucId = req.params.khuvucId;
         try {
@@ -73,7 +74,7 @@ const restaurantController = {
             const danhmucduocchon = region._doc.danhmucduocchon; // Không cần _doc
             const dateTime = new Date();
             const hours = dateTime.getHours();
-            console.log('hoursss',hours);
+
             // Tạo danh sách các promise cho từng danh mục
             const promises = danhmucduocchon
                 .filter(dm => hours + 7 >= dm.fromHours && hours + 7 <= dm.toHours) // Chỉ giữ những dm thoả điều kiện
@@ -82,11 +83,8 @@ const restaurantController = {
                         .sort({ quantity: -1 })
                         .limit(10);
 
-                    // Thêm title vào từng sản phẩm
-                    return purchasedProducts.map(product => ({
-                        ...product.toObject(),
-                        title: dm.title
-                    }));
+                    // Gắn thêm title vào kết quả
+                    return { title: dm.title, products: purchasedProducts };
                 });
 
             // Chạy tất cả truy vấn song song và chờ hoàn tất
