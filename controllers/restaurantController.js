@@ -73,6 +73,7 @@ const restaurantController = {
             const danhmucduocchon = region._doc.danhmucduocchon; // Không cần _doc
             const dateTime = new Date();
             const hours = dateTime.getHours();
+            console.log('hoursss',hours);
             // Tạo danh sách các promise cho từng danh mục
             const promises = danhmucduocchon
                 .filter(dm => hours >= dm.fromHours && hours <= dm.toHours) // Chỉ giữ những dm thoả điều kiện
