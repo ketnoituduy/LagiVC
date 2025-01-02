@@ -76,7 +76,7 @@ const restaurantController = {
             console.log('hoursss',hours);
             // Tạo danh sách các promise cho từng danh mục
             const promises = danhmucduocchon
-                .filter(dm => hours >= dm.fromHours && hours <= dm.toHours) // Chỉ giữ những dm thoả điều kiện
+                .filter(dm => hours + 7 >= dm.fromHours && hours + 7 <= dm.toHours) // Chỉ giữ những dm thoả điều kiện
                 .map(async (dm) => {
                     const purchasedProducts = await PurchasedProduct.find({ 'category.categoryId': dm._id })
                         .sort({ quantity: -1 })
