@@ -70,30 +70,20 @@ const restaurantController = {
         const khuvucId = req.params.khuvucId;
         try {
             const region = await Region.findById(khuvucId);
-            const danhmucduocchon = region._doc.danhmucduocchon; // Không cần truy cập _doc trực tiếp
-            
-            // // Tạo danh sách các truy vấn
-            // const queries = danhmucduocchon.map(dm => {
-            //     return PurchasedProduct.findOne({ 
-            //         'category.categoryId': dm._id, 
-            //         'khuvuc.khuvucId': khuvucId 
-            //     }).sort({ quantity: -1 }).limit(10);
-            // });
+            const danhmucduocchon = region.danhmucduocchon; // Không cần _doc
     
-            // // Thực thi song song các truy vấn
-            // const _danhmucduocchon = await Promise.all(queries);
-            // console.log('daaaaaamuuuuuuuc',_danhmucduocchon);
-            let _danhmucduocchon = [];
-            danhmucduocchon.forEach(async (dm) =>{
-                const purchasedProduct = await PurchasedProduct.find({ 
-                    'category.categoryId': dm._id
+            // Tạo danh sách các truy vấn
+            const queries = danhmucduocchon.map(dm => {
+                return PurchasedProduct.find({ 
+                    'category.categoryId': dm._id 
                 }).sort({ quantity: -1 }).limit(10);
-                console.log('purchasedProduct', purchasedProduct._doc);
-                // _danhmucduocchon.push(purchasedProduct._doc);
-                res.status(200).json(purchasedProduct);
-            })
-            // console.log('danhmucduocchon',_danhmucduocchon);
-            
+            });
+    
+            // Chạy tất cả truy vấn song song
+            const results = await Promise.all(queries);
+    
+            // Trả về kết quả tổng hợp
+            res.status(200).json(results);
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
