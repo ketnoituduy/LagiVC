@@ -85,11 +85,10 @@ const restaurantController = {
             // console.log('daaaaaamuuuuuuuc',_danhmucduocchon);
             let _danhmucduocchon = [];
             danhmucduocchon.forEach(async (dm) =>{
-                console.log('danhmucID',dm._id);
                 const purchasedProduct = await PurchasedProduct.find({ 
-                    'category.categoryId': dm._id, 
-                    'khuvuc.khuvucId': khuvucId 
+                    'category.categoryId': dm._id
                 }).sort({ quantity: -1 }).limit(10);
+                console.log('purchasedProduct', purchasedProduct);
                 _danhmucduocchon.push(purchasedProduct);
             })
             console.log('danhmucduocchon',_danhmucduocchon);
