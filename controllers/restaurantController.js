@@ -88,7 +88,7 @@ const restaurantController = {
                 const purchasedProduct = await PurchasedProduct.find({ 
                     'category.categoryId': dm._id
                 }).sort({ quantity: -1 }).limit(10);
-                console.log('purchasedProduct', purchasedProduct);
+                console.log('purchasedProduct', purchasedProduct._doc);
                 // _danhmucduocchon.push(purchasedProduct._doc);
                 res.status(200).json(purchasedProduct);
             })
