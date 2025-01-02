@@ -89,7 +89,7 @@ const restaurantController = {
                     'category.categoryId': dm._id
                 }).sort({ quantity: -1 }).limit(10);
                 console.log('purchasedProduct', purchasedProduct);
-                _danhmucduocchon.push(purchasedProduct);
+                _danhmucduocchon.push(purchasedProduct._doc);
             })
             console.log('danhmucduocchon',_danhmucduocchon);
             res.status(200).json(_danhmucduocchon);
