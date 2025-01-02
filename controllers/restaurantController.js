@@ -70,7 +70,7 @@ const restaurantController = {
         const khuvucId = req.params.khuvucId;
         try {
             const region = await Region.findById(khuvucId);
-            const danhmucduocchon = region.danhmucduocchon; // Không cần _doc
+            const danhmucduocchon = region._doc.danhmucduocchon; // Không cần _doc
     
             // Tạo danh sách các promise cho từng danh mục
             const promises = danhmucduocchon.map(dm =>
