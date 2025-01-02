@@ -58,5 +58,7 @@ restaurantRouter.post('/updateSupportShip/:id',restaurantController.updateSuppor
 restaurantRouter.get('/getRevenueRestaurant/:id/:mode/:date/:year/:month',restaurantController.getRevenueRestaurant);
 //lay danhmucduocchon
 restaurantRouter.get('/getDanhmucduocchon/:khuvucId',restaurantController.getDanhmucduocchon);
+// lay restaurant tu danhmucduocchon
+restaurantRouter.get('/danhmucduocchon/restaurants/:restaurantId',restaurantController.getRestaurantFromDanhmucduocchon);
 
 module.exports = restaurantRouter;

@@ -407,12 +407,7 @@ const restaurantController = {
         else {
             res.status(500).json({ message: 'khong co du lieu products' });
         }
-        // const restaurant = await Restaurant.findOne({ restaurantId: id }).populate('products');
-        // if (!restaurant) {
-        //     return res.status(500).json({ message: 'khong tim thay cua hang' });
-        // }
-        // const products = restaurant.products;
-        // res.status(200).json({ productsData: products });
+       
     },
     //tao san pham
     createProduct: async (req, res) => {
@@ -487,6 +482,20 @@ const restaurantController = {
         try {
             const id = req.params.id;
             const restaurant = await Restaurant.findById(id);
+            if (!restaurant) {
+                return res.status(500).json({ message: 'Không tìm thấy cua hang' });
+            }
+            res.status(200).json(restaurant);
+        }
+        catch (err) {
+            console.log(err);
+        }
+    },
+    //Lay du lieu cua hang tu danh sach nha hang
+    getRestaurantFromDanhmucduocchon: async (req, res) => {
+        try {
+            const restaurantId = req.params.restaurantId;
+            const restaurant = await Restaurant.findOne({restaurantId:restaurantId});
             if (!restaurant) {
                 return res.status(500).json({ message: 'Không tìm thấy cua hang' });
             }
