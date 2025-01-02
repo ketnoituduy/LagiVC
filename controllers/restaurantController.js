@@ -85,7 +85,7 @@ const restaurantController = {
             // console.log('daaaaaamuuuuuuuc',_danhmucduocchon);
             let _danhmucduocchon = [];
             danhmucduocchon.forEach(async (dm) =>{
-                console.log('danhmucID','dm._id',dm._id,'dm._doc._id',dm._doc._id);
+                console.log('danhmucID',dm);
                 const purchasedProduct = await PurchasedProduct.find({ 
                     'category.categoryId': dm._id, 
                     'khuvuc.khuvucId': khuvucId 
