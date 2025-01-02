@@ -72,18 +72,17 @@ const restaurantController = {
             const region = await Region.findById(khuvucId);
             const danhmucduocchon = region.danhmucduocchon; // Không cần _doc
     
-            // Tạo danh sách các truy vấn
-            const queries = danhmucduocchon.map(dm => {
-                return PurchasedProduct.find({ 
-                    'category.categoryId': dm._id 
-                }).sort({ quantity: -1 }).limit(10);
-            });
+            // Tạo danh sách các promise cho từng danh mục
+            const promises = danhmucduocchon.map(dm =>
+                PurchasedProduct.find({ 'category.categoryId': dm._id })
+                    .sort({ quantity: -1 })
+                    .limit(10)
+            );
     
-            // Chạy tất cả truy vấn song song
-            const results = await Promise.all(queries);
+            // Chạy tất cả truy vấn song song và chờ hoàn tất
+            const _danhmucduocchon = await Promise.all(promises);
     
-            // Trả về kết quả tổng hợp
-            res.status(200).json(results);
+            res.status(200).json(_danhmucduocchon);
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
