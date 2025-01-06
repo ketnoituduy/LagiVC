@@ -13,35 +13,43 @@ const orderController = {
             const userId = req.params.userId;
             const user = await User.findOne({ _id: userId });
             if (!user) {
-                return res.status(500).json({ message: 'Khong tim thay user' })
+                return res.status(500).json({ message: 'Không tìm thấy user' });
             }
+
             const data = req.body;
-            const { restaurantId, createdAt } = data;
-            const startOfToday = new Date(new Date().setHours(0, 0, 0, 0)); // Bắt đầu từ 00:00:00
-            const endOfToday = new Date(new Date().setHours(23, 59, 59, 999)); // Kết thúc lúc 23:59:59.999
+            const { restaurantId } = data;
+            const currentDate = new Date();
+            const startOfToday = new Date(currentDate.setHours(0, 0, 0, 0)); // Bắt đầu từ 00:00:00
             const restaurant = await Restaurant.findOne({ restaurantId: restaurantId });
-            let number = 1;
-            const { numberOrderInDay } = restaurant;
-            if (numberOrderInDay) {
-                restaurant.numberOrderInDay = (createdAt >= startOfToday && createdAt <= endOfToday) ? (numberOrderInDay + 1) : numberOrderInDay;
-                await restaurant.save();
-                const newOrder = new Order({ ...data, numberOrder: numberOrderInDay + 1 });
-                await newOrder.save()
-                res.status(200).json({ message: 'tao hoa don moi thanh cong' });
+
+            if (!restaurant) {
+                return res.status(404).json({ message: 'Không tìm thấy nhà hàng' });
             }
-            else {
-                restaurant.numberOrderInDay = number;
-                await restaurant.save();
-                const newOrder = new Order({ ...data, numberOrder: number });
-                await newOrder.save()
-                res.status(200).json({ message: 'tao hoa don moi thanh cong' });
+
+            let numberOrderInDay = restaurant.numberOrderInDay || 0;
+            let lastOrderDate = restaurant.lastOrderDate || new Date(0); // Mặc định là ngày xa trong quá khứ
+
+            // Nếu qua ngày mới, đặt lại số hóa đơn trong ngày
+            if (lastOrderDate < startOfToday) {
+                numberOrderInDay = 1;
+            } else {
+                numberOrderInDay += 1;
             }
-        }
-        catch (err) {
+
+            // Cập nhật số hóa đơn và ngày cuối cùng đặt hàng
+            restaurant.numberOrderInDay = numberOrderInDay;
+            restaurant.lastOrderDate = currentDate;
+            await restaurant.save();
+
+            // Tạo hóa đơn mới
+            const newOrder = new Order({ ...data, numberOrder: numberOrderInDay });
+            await newOrder.save();
+
+            res.status(200).json({ message: 'Tạo hóa đơn mới thành công', numberOrderInDay });
+        } catch (err) {
             console.log(err);
             res.status(500).json({ message: 'Đã xảy ra lỗi khi tạo đơn hàng' });
         }
-
     },
     //tao orderGrab 
     createOrderGrab: async (req, res) => {
