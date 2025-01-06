@@ -23,7 +23,7 @@ const orderController = {
             let number = 1;
             const { numberOrderInDay } = restaurant;
             if (numberOrderInDay) {
-                restaurant.numberOrderInDay = (createdAt >= startOfToday && createdAt <= endOfToday) ? (numberOrderInDay + 1) : number;
+                restaurant.numberOrderInDay = (createdAt >= startOfToday && createdAt <= endOfToday) ? (numberOrderInDay + 1) : numberOrderInDay;
                 await restaurant.save();
                 const newOrder = new Order({ ...data, numberOrder: numberOrderInDay + 1 });
                 await newOrder.save()
