@@ -25,7 +25,7 @@ const orderController = {
             if (numberOrderInDay) {
                 restaurant.numberOrderInDay = (createdAt >= startOfToday && createdAt <= endOfToday) ? (numberOrderInDay + 1) : number;
                 await restaurant.save();
-                const newOrder = new Order({ ...data, numberOrder: numberOrderInDay });
+                const newOrder = new Order({ ...data, numberOrder: numberOrderInDay + 1 });
                 await newOrder.save()
                 res.status(200).json({ message: 'tao hoa don moi thanh cong' });
             }
