@@ -33,7 +33,8 @@ const orderSchema = new mongoose.Schema({
     totalAmount:Number,
     transportFee:Number,
     vehicleId:String,
-    supportShip: Number
+    supportShip: Number,
+    numberOrder:Number
 })
 const Order = mongoose.model('Order',orderSchema);
 module.exports = Order;

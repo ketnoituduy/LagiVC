@@ -41,7 +41,8 @@ const restaurantSchema = new mongoose.Schema({
     numRatings:Number,
     rating:Number,
     stars:{ type: [Number] } ,
-    supportShips:{type:Array}
+    supportShips:{type:Array},
+    numberOrderInDay:{type:Number,default:0}
 })
 const Restaurant = mongoose.model('Restaurant', restaurantSchema);
 module.exports = Restaurant;

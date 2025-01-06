@@ -9,15 +9,39 @@ const sendPushNotification = require('../parameters/sendPushNotification');
 const orderController = {
     //tao order moi khi mua hang
     createNewOrder: async (req, res) => {
-        const userId = req.params.userId;
-        const user = await User.findOne({ _id: userId });
-        if (!user) {
-            return res.status(500).json({ message: 'Khong tim thay user' })
+        try {
+            const userId = req.params.userId;
+            const user = await User.findOne({ _id: userId });
+            if (!user) {
+                return res.status(500).json({ message: 'Khong tim thay user' })
+            }
+            const data = req.body;
+            const { restaurantId, createdAt } = data;
+            const startOfToday = new Date(new Date().setHours(0, 0, 0, 0)); // Bắt đầu từ 00:00:00
+            const endOfToday = new Date(new Date().setHours(23, 59, 59, 999)); // Kết thúc lúc 23:59:59.999
+            const restaurant = await Restaurant.findOne({ restaurantId: restaurantId });
+            let number = 1;
+            const { numberOrderInDay } = restaurant;
+            if (numberOrderInDay) {
+                restaurant.numberOrderInDay = (createdAt >= startOfToday && createdAt <= endOfToday) ? (numberOrderInDay + 1) : number;
+                await restaurant.save();
+                const newOrder = new Order({ ...data, numberOrder: numberOrderInDay });
+                await newOrder.save()
+                res.status(200).json({ message: 'tao hoa don moi thanh cong' });
+            }
+            else {
+                restaurant.numberOrderInDay = number;
+                await restaurant.save();
+                const newOrder = new Order({ ...data, numberOrder: number });
+                await newOrder.save()
+                res.status(200).json({ message: 'tao hoa don moi thanh cong' });
+            }
         }
-        const data = req.body;
-        const newOrder = new Order(data);
-        await newOrder.save()
-        res.status(200).json({ message: 'tao hoa don moi thanh cong' });
+        catch (err) {
+            console.log(err);
+            res.status(500).json({ message: 'Đã xảy ra lỗi khi tạo đơn hàng' });
+        }
+
     },
     //tao orderGrab 
     createOrderGrab: async (req, res) => {
