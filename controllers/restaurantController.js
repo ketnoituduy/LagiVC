@@ -364,8 +364,7 @@ const restaurantController = {
                 return res.status(500).json({ message: 'Đánh giá cửa hàng đã mất hiệu lực.' });
             }
             else {
-                const newReview = new Review(reviewData);
-                await newReview.save();
+                await review.updateOne(reviewData);
             }
         }
         const reviews = await Review.find({ restaurant: restaurantId });

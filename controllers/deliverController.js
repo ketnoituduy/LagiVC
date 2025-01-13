@@ -86,8 +86,7 @@ const deliverController = {
                 return res.status(500).json({ message: 'Đánh giá tài xế đã mất hiệu lực.' });
             }
             else{
-                const newReviewDeliver = new ReviewDeliver(data);
-                await newReviewDeliver.save();
+                await reviewDeliver.updateOne(data);
             }
         }
         const reviewsDeliver = await ReviewDeliver.find({ deliver: deliverId });
