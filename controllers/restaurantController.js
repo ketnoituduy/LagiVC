@@ -349,7 +349,7 @@ const restaurantController = {
         const restaurantId = req.params.restaurantId;
         const orderId = req.params.orderId;
         const reviewData = req.body;
-        const review = await Review.findOneAndUpdate({ id: orderId }, reviewData);
+        const review = await Review.findOne({ id: orderId });
         if (!review) {
             const newReview = new Review(reviewData);
             const saveReview = await newReview.save();
@@ -362,6 +362,10 @@ const restaurantController = {
             const timeDiff = (newDate - lastDayReview) / (1000 * 60 * 60 * 24); // Tính số ngày chênh lệch
             if (timeDiff > 2) {
                 return res.status(500).json({ message: 'Đánh giá cửa hàng đã mất hiệu lực.' });
+            }
+            else {
+                const newReview = new Review(reviewData);
+                await newReview.save();
             }
         }
         const reviews = await Review.find({ restaurant: restaurantId });

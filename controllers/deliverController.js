@@ -71,7 +71,7 @@ const deliverController = {
         const deliverId = req.params.deliverId;
         const orderGrabId = req.params.orderGrabId;
         const data = req.body;
-        const reviewDeliver = await ReviewDeliver.findOneAndUpdate({ id: orderGrabId }, data);
+        const reviewDeliver = await ReviewDeliver.findOne({ id: orderGrabId });
         if (!reviewDeliver) {
             const newReviewDeliver = new ReviewDeliver(data);
             const saveReviewDeliver = await newReviewDeliver.save();
@@ -84,6 +84,10 @@ const deliverController = {
             const timeDiff = (newDate - lastDayReview) / (1000 * 60 * 60 * 24); // Tính số ngày chênh lệch
             if (timeDiff > 2) {
                 return res.status(500).json({ message: 'Đánh giá tài xế đã mất hiệu lực.' });
+            }
+            else{
+                const newReviewDeliver = new ReviewDeliver(data);
+                await newReviewDeliver.save();
             }
         }
         const reviewsDeliver = await ReviewDeliver.find({ deliver: deliverId });
