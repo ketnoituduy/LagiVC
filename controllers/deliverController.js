@@ -78,6 +78,14 @@ const deliverController = {
             const deliver = Deliver.findOne({ deliverId: deliverId });
             await deliver.updateOne({ $push: { reviews: saveReviewDeliver._id } });
         }
+        else {
+            const newDate = new Date();
+            const lastDayReview = reviewDeliver.timeStamp; // Chuyển thành Date object
+            const timeDiff = (newDate - lastDayReview) / (1000 * 60 * 60 * 24); // Tính số ngày chênh lệch
+            if (timeDiff > 2) {
+                return res.status(500).json({ message: 'Đánh giá tài xế đã mất hiệu lực.' });
+            }
+        }
         const reviewsDeliver = await ReviewDeliver.find({ deliver: deliverId });
         let totalRating = 0;
         let numRatings = 0;

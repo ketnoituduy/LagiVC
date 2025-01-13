@@ -356,6 +356,14 @@ const restaurantController = {
             const restaurant = Restaurant.findOne({ restaurantId: restaurantId });
             await restaurant.updateOne({ $push: { reviews: saveReview._id } });
         }
+        else {
+            const newDate = new Date();
+            const lastDayReview = review.timeStamp; // Chuyển thành Date object
+            const timeDiff = (newDate - lastDayReview) / (1000 * 60 * 60 * 24); // Tính số ngày chênh lệch
+            if (timeDiff > 2) {
+                return res.status(500).json({ message: 'Đánh giá cửa hàng đã mất hiệu lực.' });
+            }
+        }
         const reviews = await Review.find({ restaurant: restaurantId });
         let totalRating = 0;
         let numRatings = 0;
@@ -407,7 +415,7 @@ const restaurantController = {
         else {
             res.status(500).json({ message: 'khong co du lieu products' });
         }
-       
+
     },
     //tao san pham
     createProduct: async (req, res) => {
@@ -495,7 +503,7 @@ const restaurantController = {
     getRestaurantFromDanhmucduocchon: async (req, res) => {
         try {
             const restaurantId = req.params.restaurantId;
-            const restaurant = await Restaurant.findOne({restaurantId:restaurantId});
+            const restaurant = await Restaurant.findOne({ restaurantId: restaurantId });
             if (!restaurant) {
                 return res.status(500).json({ message: 'Không tìm thấy cua hang' });
             }
