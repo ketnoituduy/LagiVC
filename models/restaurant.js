@@ -24,7 +24,7 @@ const restaurantSchema = new mongoose.Schema({
     dateOpen2:{type:String},
     dayCreated:{type:Date},
     dayUpdated:{type:String},
-    restaurantId: {type:String},
+    restaurantId: {type:String,unique:true,index:true},
     socketId:String,
     products:[
         {

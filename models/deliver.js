@@ -13,7 +13,7 @@ const deliverSchema = new mongoose.Schema({
     licensePlates:String,
     tiencuoc:Number,
     vehicleId:String,
-    deliverId:String,
+    deliverId:{type:String,unique:true,index:true},
     socketId:String,
     reviews:[
         {
