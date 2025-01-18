@@ -14,5 +14,13 @@ deliverRouter.get('/delivers/location/:khuvucId/:vehicleId',deliverController.ge
 deliverRouter.post('/reviewDeliver/:deliverId/:orderGrabId',deliverController.reviewDeliver);
 //lay du lieu doanh thu deliver
 deliverRouter.get('/getRevenueDeliver/:id/:mode/:date/:year/:month',deliverController.getRevenueDeliver);
+//cap nhat numOrder
+deliverRouter.post('/numOrderOfDeliver/:id',deliverController.numOrderOfDeliver);
+//lay numberOrder
+deliverRouter.get('/getNumOrderDeliver/:id',deliverController.getNumOrderDeliver);
+//cap nhat numOrderGrab
+deliverRouter.post('/numOrderGrabOfDeliver/:id',deliverController.numOrderGrabOfDeliver);
+//lay numberOrderGrab
+deliverRouter.get('/getNumOrderGrabDeliver/:id',deliverController.getNumOrderGrabDeliver);
 
 module.exports = deliverRouter;

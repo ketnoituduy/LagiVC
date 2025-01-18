@@ -85,7 +85,7 @@ const deliverController = {
             if (timeDiff > 2) {
                 return res.status(500).json({ message: 'Đánh giá tài xế đã mất hiệu lực.' });
             }
-            else{
+            else {
                 await reviewDeliver.updateOne(data);
             }
         }
@@ -224,6 +224,86 @@ const deliverController = {
             res.status(200).json({ total });
 
         } catch (err) {
+            console.error(err);
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
+    },
+    numOrderOfDeliver: async (req, res) => {
+        try {
+            const deliveryId = req.params.id;
+
+            // Đếm số lượng hóa đơn mà không cần lấy toàn bộ dữ liệu
+            const numOrders = await Order.countDocuments({ deliveryId });
+
+            const deliver = await Deliver.findOne({ deliverId: deliveryId });
+            if (!deliver) {
+                return res.status(404).json({ message: 'Không tìm thấy tai xe' });
+            }
+
+            // Cập nhật số lượng hóa đơn và lưu
+            deliver.numOrder = numOrders;
+            await deliver.save();
+
+            // Trả về kết quả
+            res.status(200).json({ numOrder: numOrders });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
+    },
+    getNumOrderDeliver: async (req, res) => {
+        try {
+            const deliveryId = req.params.id;
+            const numOrder = await Order.countDocuments({ deliveryId });
+            const deliver = await Deliver.findOne({ deliverId: deliveryId });
+            if (!deliver) {
+                return res.status(404).json({ message: 'Không tìm thấy tai xe' });
+            }
+            const numCurrentOrder = deliver.numOrder;
+            const num = numOrder - numCurrentOrder;
+            res.status(200).json({ number: num });
+        }
+        catch {
+            console.error(err);
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
+    },
+    numOrderGrabOfDeliver: async (req, res) => {
+        try {
+            const deliveryId = req.params.id;
+
+            // Đếm số lượng hóa đơn mà không cần lấy toàn bộ dữ liệu
+            const numOrdersGrab = await OrderGrab.countDocuments({ deliveryId });
+
+            const deliver = await Deliver.findOne({ deliverId: deliveryId });
+            if (!deliver) {
+                return res.status(404).json({ message: 'Không tìm thấy tai xe' });
+            }
+
+            // Cập nhật số lượng hóa đơn và lưu
+            deliver.numOrderGrab = numOrdersGrab;
+            await deliver.save();
+
+            // Trả về kết quả
+            res.status(200).json({ numOrderGrab: numOrdersGrab });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
+    },
+    getNumOrderGrabDeliver: async (req, res) => {
+        try {
+            const deliveryId = req.params.id;
+            const numOrderGrab = await OrderGrab.countDocuments({ deliveryId });
+            const deliver = await Deliver.findOne({ deliverId: deliveryId });
+            if (!deliver) {
+                return res.status(404).json({ message: 'Không tìm thấy tai xe' });
+            }
+            const numCurrentOrderGrab = deliver.numOrderGrab;
+            const num = numOrderGrab - numCurrentOrderGrab;
+            res.status(200).json({ number: num });
+        }
+        catch {
             console.error(err);
             res.status(500).json({ message: 'Internal Server Error' });
         }
