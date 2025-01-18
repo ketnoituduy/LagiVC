@@ -60,5 +60,9 @@ restaurantRouter.get('/getRevenueRestaurant/:id/:mode/:date/:year/:month',restau
 restaurantRouter.get('/getDanhmucduocchon/:khuvucId',restaurantController.getDanhmucduocchon);
 // lay restaurant tu danhmucduocchon
 restaurantRouter.get('/danhmucduocchon/restaurants/:restaurantId',restaurantController.getRestaurantFromDanhmucduocchon);
+//cap nhat numOrder
+restaurantRouter.post('/numOrderOfRestaurant/:id',restaurantController.numOrderOfRestaurant);
+//lay numberOrder
+restaurantRouter.get('/getNumOrder/:id',restaurantController.getNumOrder);
 
 module.exports = restaurantRouter;
