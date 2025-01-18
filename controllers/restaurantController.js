@@ -626,6 +626,48 @@ const restaurantController = {
             console.error(err);
             res.status(500).json({ message: 'Internal Server Error' });
         }
+    },
+    numOrderOfRestaurant: async (req, res) => {
+        try {
+            const restaurantId = req.params.id;
+
+            // Đếm số lượng hóa đơn mà không cần lấy toàn bộ dữ liệu
+            const numOrders = await Order.countDocuments({ restaurantId });
+
+            // Tìm nhà hàng bằng restaurantId
+            const restaurant = await Restaurant.findOne({ restaurantId });
+            if (!restaurant) {
+                return res.status(404).json({ message: 'Không tìm thấy cửa hàng' });
+            }
+
+            // Cập nhật số lượng hóa đơn và lưu
+            restaurant.numOrder = numOrders;
+            await restaurant.save();
+
+            // Trả về kết quả
+            res.status(200).json({ numOrder: numOrders });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
+    },
+    getNumOrder: async (req, res) => {
+        try {
+            const restaurantId = req.params.id;
+            const numOrder = await Order.countDocuments({ restaurantId });
+            // Tìm nhà hàng bằng restaurantId
+            const restaurant = await Restaurant.findOne({ restaurantId });
+            if (!restaurant) {
+                return res.status(404).json({ message: 'Không tìm thấy cửa hàng' });
+            }
+            const numCurrentOrder = restaurant.numOrder;
+            const num = numOrder - numCurrentOrder;
+            res.status(200).json({number:num});
+        }
+        catch {
+            console.error(err);
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
     }
 
 
