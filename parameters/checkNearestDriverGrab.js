@@ -5,7 +5,7 @@ const OrderGrab = require("../models/orderGrab");
 
 
 const checkNearestDriverGrab = async (clientLocation, orderGrabId, NearestDrivers, name, timeRequest, vehicleId, feeDeliver, khuvucId, socketIO) => {
-    const delivers = await Deliver.find({ 'isActive': true, 'vehicleId': vehicleId, 'khuvuc.khuvucId': khuvucId, 'tiencuoc': { $gte: feeDeliver } });
+    const delivers = await Deliver.find({ 'isActive': true,status:1, 'vehicleId': vehicleId, 'khuvuc.khuvucId': khuvucId, 'tiencuoc': { $gte: feeDeliver } });
     const order = await OrderGrab.findById(orderGrabId);
     if(!order){
         return;

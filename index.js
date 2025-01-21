@@ -15,7 +15,7 @@ const limiter = rateLimit({
     windowMs: 10 * 60 * 1000, // 10 minutes
     max: 1500, // số lượng request tối đa trong windowMs cho mỗi IP
     message: "Quá nhiều yêu cầu từ IP của bạn, vui lòng thử lại sau một thời gian."
-  });
+});
 app.use(helmet());
 app.use(limiter);
 
@@ -182,18 +182,18 @@ socketIO.on('connection', (socket) => {
 
 app.get('/', (req, res) => {
     res.status(200).send('Hello World!');
-  })
+})
 
 // Endpoint để lấy phiên bản mới nhất
 app.get('/api/version', async (req, res) => {
-    Version.find().then(data =>{
-        console.log('version',data);
+    Version.find().then(data => {
+        console.log('version', data);
         res.status(200).json(data[0]);
 
-    }).catch(err=>{
-        res.status(500).json({message:'loi truyen version'});
+    }).catch(err => {
+        res.status(500).json({ message: 'loi truyen version' });
     })
-});  
+});
 
 //Lay du lieu khu vuc
 app.get('/khuvuc', async (req, res) => {
@@ -224,9 +224,9 @@ app.get('/parameters', async (req, res) => {
 //lay du lieu categories
 app.get('/:khuvucId/categories', async (req, res) => {
     const id = req.params.khuvucId;
-    console.log('aassddd',id);
+    console.log('aassddd', id);
     Region.findById(id).then(data => {
-        console.log('categories',data._doc.categories);
+        console.log('categories', data._doc.categories);
         res.status(200).json(data._doc.categories);
     }).catch(err => {
         res.status(500).json({ message: 'loi truyen categories' });
@@ -257,6 +257,9 @@ const fetchDriversFromRestaurant = async (data, order) => {
 const fetchDriversFromDriver = async (data, order) => {
     const orderId = data.orderId;
     const deliverId = data.deliverId;
+    const deliver = await Deliver.findOne({ deliverId: deliverId });
+    deliver.status = 1;
+    await deliver.save();
     const restaurantLocation = data.restaurantLocation;
     const khuvucId = order.khuvuc.khuvucId;
     const parameters = await Parameter.find();
@@ -293,6 +296,9 @@ const fetchDriversFromClient = async (data) => {
 const fetchDriversFromDriverGrab = async (data, order) => {
     const orderId = data.orderGrabId;
     const deliverId = data.deliverId;
+    const deliver = await Deliver.findOne({ deliverId: deliverId });
+    deliver.status = 1;
+    await deliver.save();
     const clientLocation = data.clientLocation;
     const khuvucId = order.khuvuc.khuvucId;
     const parameters = await Parameter.find();

@@ -26,7 +26,8 @@ const deliverSchema = new mongoose.Schema({
     urlImageCMNDMatTruoc:String,
     urlImageCMNDMatSau:String,
     numOrder:{type:Number,default:0},
-    numOrderGrab:{type:Number,default:0}
+    numOrderGrab:{type:Number,default:0},
+    status:{type:Number,default:1}
 })
 const Deliver = mongoose.model('Deliver',deliverSchema);
 module.exports = Deliver;

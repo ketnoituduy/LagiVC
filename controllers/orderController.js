@@ -230,6 +230,8 @@ const orderController = {
             else if (status.name === 'Chấp nhận') {
                 const money = tiencuoc - feeDeliver;
                 deliver.tiencuoc = money;
+                //status = 2 la dang ban ron vi da nhan hoa don
+                deliver.status = 2;
                 await deliver.save();
             }
             const tempStatus = { name: 'Đang giao', color: statusColors.dangGiao };
@@ -273,6 +275,7 @@ const orderController = {
             else if (status.name === 'Chờ tài xế') {
                 const money = tiencuoc - feeDeliver;
                 deliver.tiencuoc = money;
+                deliver.status = 2;
                 await deliver.save();
             }
             const tempStatus = { name: data.title, color: data.color };
@@ -299,11 +302,13 @@ const orderController = {
         const userId = req.params.userId;
         const orderId = req.params.orderId;
         const status = req.body;
-        // const deliver = await Deliver.findOne({ deliverId: userId });
         const order = await Order.findById(orderId);
         const { deliveryId, restaurantId } = order;
         const restaurant = await Restaurant.findOne({ restaurantId: restaurantId });
         if (userId === deliveryId) {
+            const deliver = await Deliver.findOne({ deliverId: userId });
+            deliver.status = 1;
+            await deliver.save();
             order.status = status;
             await order.save();
             const { numberOrder } = restaurant;
