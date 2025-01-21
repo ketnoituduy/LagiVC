@@ -278,7 +278,7 @@ const orderController = {
                 deliver.status = 2;
                 await deliver.save();
             }
-            if(status.name === 'Đang di chuyển'){
+            if(data.title === 'Hoàn tất'){
                 deliver.status = 1;
             }
             const tempStatus = { name: data.title, color: data.color };
