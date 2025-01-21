@@ -280,6 +280,7 @@ const orderController = {
             }
             if(data.title === 'Hoàn tất'){
                 deliver.status = 1;
+                await deliver.save();
             }
             const tempStatus = { name: data.title, color: data.color };
             const deliveryName = deliver.name;
