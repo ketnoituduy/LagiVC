@@ -65,13 +65,12 @@ const restaurantController = {
             res.status(500).json({ error: error.message });
         }
     },
-    //Lay du lieu cua hang duoc chon tu danh muc
     // Lấy dữ liệu cửa hàng được chọn từ danh mục
     getDanhmucduocchon: async (req, res) => {
         const khuvucId = req.params.khuvucId;
         try {
             const region = await Region.findById(khuvucId);
-            const danhmucduocchon = region._doc.danhmucduocchon; // Không cần _doc
+            const danhmucduocchon = region.danhmucduocchon; // Không cần _doc
             const dateTime = new Date();
             const hours = dateTime.getHours();
 
@@ -83,8 +82,20 @@ const restaurantController = {
                         .sort({ quantity: -1 })
                         .limit(10);
 
-                    // Gắn thêm title vào kết quả
-                    return { title: dm.title, products: purchasedProducts };
+                    // Lọc duy nhất restaurantId trong mảng purchasedProducts
+                    const uniqueRestaurants = [];
+                    const restaurantIds = new Set();
+
+                    purchasedProducts.forEach(product => {
+                        const restaurantId = product.restaurantId;
+                        if (!restaurantIds.has(restaurantId)) {
+                            restaurantIds.add(restaurantId);
+                            uniqueRestaurants.push(product);
+                        }
+                    });
+
+                    // Gắn thêm title vào kết quả và trả về danh sách uniqueRestaurants
+                    return { title: dm.title, products: uniqueRestaurants };
                 });
 
             // Chạy tất cả truy vấn song song và chờ hoàn tất
@@ -662,7 +673,7 @@ const restaurantController = {
             }
             const numCurrentOrder = restaurant.numOrder;
             const num = numOrder - numCurrentOrder;
-            res.status(200).json({number:num});
+            res.status(200).json({ number: num });
         }
         catch {
             console.error(err);
