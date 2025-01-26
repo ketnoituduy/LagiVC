@@ -70,7 +70,7 @@ const restaurantController = {
         const khuvucId = req.params.khuvucId;
         try {
             const region = await Region.findById(khuvucId);
-            const danhmucduocchon = region.danhmucduocchon; // Không cần _doc
+            const danhmucduocchon = region._doc.danhmucduocchon; // Không cần _doc
             const dateTime = new Date();
             const hours = dateTime.getHours();
 
@@ -82,14 +82,13 @@ const restaurantController = {
                         .sort({ quantity: -1 })
                         .limit(10);
 
-                    // Lọc duy nhất restaurantId trong mảng purchasedProducts
+                    // Sử dụng Set để lọc các sản phẩm theo restaurantId
                     const uniqueRestaurants = [];
                     const restaurantIds = new Set();
 
                     purchasedProducts.forEach(product => {
-                        const restaurantId = product.restaurantId;
-                        if (!restaurantIds.has(restaurantId)) {
-                            restaurantIds.add(restaurantId);
+                        if (!restaurantIds.has(product.restaurantId)) {
+                            restaurantIds.add(product.restaurantId);
                             uniqueRestaurants.push(product);
                         }
                     });
@@ -101,6 +100,7 @@ const restaurantController = {
             // Chạy tất cả truy vấn song song và chờ hoàn tất
             const _danhmucduocchon = await Promise.all(promises);
 
+            // Trả kết quả đã xử lý
             res.status(200).json(_danhmucduocchon);
         } catch (error) {
             res.status(500).json({ error: error.message });
