@@ -22,5 +22,7 @@ deliverRouter.get('/getNumOrderDeliver/:id',deliverController.getNumOrderDeliver
 deliverRouter.post('/numOrderGrabOfDeliver/:id',deliverController.numOrderGrabOfDeliver);
 //lay numberOrderGrab
 deliverRouter.get('/getNumOrderGrabDeliver/:id',deliverController.getNumOrderGrabDeliver);
+//lay vi tri 1 tai xe
+deliverRouter.get('/getLocationDeliver/:id',deliverController.getLocationDeliver);
 
 module.exports = deliverRouter;

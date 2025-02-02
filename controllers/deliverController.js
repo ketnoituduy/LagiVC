@@ -66,6 +66,23 @@ const deliverController = {
         })
         res.status(200).json(data);
     },
+    //lay vi tri 1 tai xe
+    getLocationDeliver: async (req, res) => {
+        const deliverId = req.params.id;
+        try {
+            const deliver = await Deliver.findOne({ deliverId: deliverId });
+            if (!deliver) {
+                return res.status(404).json({ message: 'Tài xế không tồn tại' });
+            }
+
+            // Trả về lat và long của tài xế
+            const { latitude, longitude } = deliver;
+            return res.status(200).json({ latitude, longitude });
+        } catch (err) {
+            console.error(err); // Ghi lỗi nếu có để dễ dàng debug
+            return res.status(500).json({ message: 'Đã xảy ra lỗi khi lấy vị trí tài xế' });
+        }
+    },
     //Danh gia tai xe
     reviewDeliver: async (req, res) => {
         const deliverId = req.params.deliverId;
