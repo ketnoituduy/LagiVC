@@ -228,10 +228,15 @@ const orderController = {
                 return res.status(201).json({ message: 'Tien cuoc khong du' });
             }
             else if (status.name === 'Chấp nhận') {
-                const money = tiencuoc - feeDeliver;
-                deliver.tiencuoc = money;
+                // const money = tiencuoc - feeDeliver;
+                // deliver.tiencuoc = money;
                 //status = 2 la dang ban ron vi da nhan hoa don
                 deliver.status = 2;
+                await deliver.save();
+            }
+            else if (status.name === 'Đang giao') {
+                const money = tiencuoc - feeDeliver;
+                deliver.tiencuoc = money;
                 await deliver.save();
             }
             const tempStatus = { name: 'Đang giao', color: statusColors.dangGiao };
@@ -273,9 +278,15 @@ const orderController = {
                 return res.status(201).json({ message: 'Tien cuoc khong du' });
             }
             else if (status.name === 'Chờ tài xế') {
+                // const money = tiencuoc - feeDeliver;
+                // deliver.tiencuoc = money;
+                deliver.status = 2;
+                await deliver.save();
+            }
+            else if (status.name === 'Đang đón khách') {
                 const money = tiencuoc - feeDeliver;
                 deliver.tiencuoc = money;
-                deliver.status = 2;
+                // deliver.status = 2;
                 await deliver.save();
             }
             if(data.title === 'Hoàn tất'){
