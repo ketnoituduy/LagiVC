@@ -76,8 +76,8 @@ const deliverController = {
             }
 
             // Trả về lat và long của tài xế
-            const { latitude, longitude } = deliver;
-            return res.status(200).json({ latitude, longitude });
+            const { latitude, longitude, vehicleId,name } = deliver;
+            return res.status(200).json({ latitude, longitude,vehicleId,name });
         } catch (err) {
             console.error(err); // Ghi lỗi nếu có để dễ dàng debug
             return res.status(500).json({ message: 'Đã xảy ra lỗi khi lấy vị trí tài xế' });
