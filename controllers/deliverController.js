@@ -324,7 +324,24 @@ const deliverController = {
             console.error(err);
             res.status(500).json({ message: 'Internal Server Error' });
         }
-    }
+    },
+    //Lay danh gia tai xe
+    getReviewsDeliver: async (req, res) => {
+        const deliverId = req.params.deliverId;
+        const pageNumber = parseInt(req.query.page) || 1;
+        const perPage = 10;
+        const skip = (pageNumber - 1) * perPage;
+        try {
+            const reviews = await ReviewDeliver.find({ deliver: deliverId }).sort({ timeStamp: -1 }).skip(skip).limit(perPage);
+            if (!reviews) {
+                return res.status(500).json({ message: 'khong ton tai tai xe' });
+            }
+            res.status(200).json(reviews);
+        }
+        catch (err) {
+            res.status(500).json({ message: err.message });
+        }
+    },
 
 }
 module.exports = deliverController;

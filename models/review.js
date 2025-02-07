@@ -17,6 +17,7 @@ const reviewSchema = new mongoose.Schema({
     },
     restaurant:{
         type:mongoose.Schema.Types.ObjectId,
+        index:true,
         ref:'Restaurant'
     },
 })

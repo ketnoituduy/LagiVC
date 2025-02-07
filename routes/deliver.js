@@ -24,5 +24,7 @@ deliverRouter.post('/numOrderGrabOfDeliver/:id',deliverController.numOrderGrabOf
 deliverRouter.get('/getNumOrderGrabDeliver/:id',deliverController.getNumOrderGrabDeliver);
 //lay vi tri 1 tai xe
 deliverRouter.get('/getLocationDeliver/:id',deliverController.getLocationDeliver);
+//lay danh gia tai xe
+deliverRouter.get('/:deliverId/reviewDelivers',deliverController.getReviewsDeliver);
 
 module.exports = deliverRouter;
