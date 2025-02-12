@@ -68,7 +68,7 @@ http.listen(port, () => {
     console.log(ipAddress, port);
 })
 
-const rateLimit = {};
+const rate_Limit = {};
 
 const MAX_REQUESTS = 10; // Giới hạn tối đa 10 request
 const TIME_WINDOW = 5000; // Trong 5 giây
@@ -76,26 +76,26 @@ const TIME_WINDOW = 5000; // Trong 5 giây
 socketIO.on("connection", (socket) => {
     console.log("A user connected", socket.id);
 
-    rateLimit[socket.id] = { count: 0, lastRequest: Date.now() };
+    rate_Limit[socket.id] = { count: 0, lastRequest: Date.now() };
 
     const isSpamming = (socket) => {
-        if (!rateLimit[socket.id]) {
-            rateLimit[socket.id] = { count: 0, lastRequest: Date.now() };
+        if (!rate_Limit[socket.id]) {
+            rate_Limit[socket.id] = { count: 0, lastRequest: Date.now() };
         }
 
         let now = Date.now();
-        let elapsed = now - rateLimit[socket.id].lastRequest;
+        let elapsed = now - rate_Limit[socket.id].lastRequest;
 
         if (elapsed < TIME_WINDOW) {
-            rateLimit[socket.id].count++;
-            if (rateLimit[socket.id].count > MAX_REQUESTS) {
+            rate_Limit[socket.id].count++;
+            if (rate_Limit[socket.id].count > MAX_REQUESTS) {
                 console.log(`⚠️ User ${socket.id} bị chặn do spam!`);
                 socket.emit("Server_RateLimit", { message: "Bạn đã gửi quá nhiều yêu cầu, hãy thử lại sau!" });
                 return true;
             }
         } else {
-            rateLimit[socket.id].count = 1;
-            rateLimit[socket.id].lastRequest = now;
+            rate_Limit[socket.id].count = 1;
+            rate_Limit[socket.id].lastRequest = now;
         }
 
         return false;
@@ -228,7 +228,7 @@ socketIO.on("connection", (socket) => {
 
     socket.on("disconnect", () => {
         console.log("⚡ Đã ngắt kết nối", socket.id);
-        delete rateLimit[socket.id]; // Xóa dữ liệu khi user rời đi
+        delete rate_Limit[socket.id]; // Xóa dữ liệu khi user rời đi
     });
 });
 
