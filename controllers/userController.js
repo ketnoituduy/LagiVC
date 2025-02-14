@@ -54,26 +54,30 @@ const userController = {
         try {
             const userId = req.params.userId;
             const userData = req.body;
-            // Xác thực người dùng và kiểm tra mật khẩu
+
+            // Xác thực người dùng và lấy thông tin người dùng từ cơ sở dữ liệu
             const user = await User.findById(userId);
             if (!user) {
                 return res.status(404).json({ message: 'Người dùng không tồn tại' });
             }
-            // const isPasswordValid = await comparePassword(userData.password, user.password);
-            // console.log(isPasswordValid)
-            if (user.password !== userData.password) {
+
+            // So sánh mật khẩu người dùng nhập vào với mật khẩu đã mã hóa trong cơ sở dữ liệu
+            const isPasswordValid =  bcrypt.compareSync(userData.password, user.password);
+            if (!isPasswordValid) {
                 return res.status(401).json({ message: 'Mật khẩu không hợp lệ' });
             }
+
+            // Kiểm tra xem người dùng có liên kết với tài khoản restaurant hoặc deliver không
             const restaurant = await Restaurant.findOne({ restaurantId: userId });
             const deliver = await Deliver.findOne({ deliverId: userId });
             if (restaurant || deliver) {
-                // Nếu user đang liên kết với tài khoản restaurant hoặc deliver
-                // Bạn có thể tự động tạo logic xử lý ở đây
                 return res.status(409).json({ message: 'Không thể xóa người dùng vì đang liên kết với tài khoản restaurant hoặc deliver' });
             }
+
             // Xóa người dùng
             const deletedUser = await User.findByIdAndDelete(userId);
             if (deletedUser) {
+                // Bạn có thể thêm các lệnh xóa dữ liệu liên quan nếu cần
                 // await Restaurant.findOneAndDelete({ restaurantId: userId });
                 // await Deliver.findOneAndDelete({ deliverId: userId });
                 return res.status(200).json({ message: 'Người dùng đã được xóa' });
@@ -82,6 +86,7 @@ const userController = {
             }
 
         } catch (error) {
+            console.error('Error deleting account:', error);
             return res.status(500).json({ message: 'Lỗi máy chủ' });
         }
     },

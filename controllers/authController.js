@@ -145,7 +145,7 @@ const authController = {
             // Gửi email xác minh
             sendVerificationEmail(newUser.email, newUser.verificationToken);
 
-            res.status(201).json({ message: "Đăng ký thành công, vui lòng kiểm tra email để xác nhận tài khoản." });
+            res.status(200).json({ message: "Đăng ký thành công, vui lòng kiểm tra email để xác nhận tài khoản." });
         } catch (error) {
             console.error("Đăng ký thất bại:", error);
             res.status(500).json({ message: "Đăng ký thất bại" });
