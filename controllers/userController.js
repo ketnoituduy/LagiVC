@@ -1,21 +1,41 @@
 const User = require('../models/user');
 const Restaurant = require('../models/restaurant');
 const Deliver = require('../models/deliver');
+const bcrypt = require('bcrypt');
+
 const userController = {
     //thay doi password
     resetPassword: async (req, res) => {
         const userId = req.params.userId;
         const { oldPassword, newPassword } = req.body;
-        const user = await User.findOne({ _id: userId });
-        if (!user) {
-            return res.status(500).json({ message: 'khong co user ton tai' });
+
+        try {
+            // Tìm user theo userId
+            const user = await User.findOne({ _id: userId });
+            if (!user) {
+                return res.status(404).json({ message: 'Không có user tồn tại' });
+            }
+
+            // So sánh mật khẩu cũ với mật khẩu đã mã hóa trong cơ sở dữ liệu
+            const isMatch = bcrypt.compareSync(oldPassword, user.password);
+            if (!isMatch) {
+                return res.status(400).json({ message: 'Mật khẩu cũ không đúng' });
+            }
+
+            // Mã hóa mật khẩu mới trước khi lưu vào cơ sở dữ liệu
+            const salt = await bcrypt.genSalt(10);  // Tạo salt với mức độ bảo mật là 10
+            const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+            // Cập nhật mật khẩu mới vào cơ sở dữ liệu
+            user.password = hashedPassword;
+            await user.save();
+
+            // Gửi phản hồi thành công
+            res.status(200).json({ message: 'Thay đổi mật khẩu thành công' });
+        } catch (error) {
+            console.error("Error resetting password:", error);
+            res.status(500).json({ message: 'Đã xảy ra lỗi trong quá trình thay đổi mật khẩu' });
         }
-        if (user.password !== oldPassword) {
-            return res.status(500).json({ message: 'Password cu da bi sai' });
-        }
-        user.password = newPassword;
-        await user.save();
-        res.status(200).json({ message: 'Thay doi password thanh cong' });
     },
 
     //lay du lieu region cua User

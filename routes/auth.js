@@ -15,7 +15,7 @@ authRouter.post('/registerphone',authController.registerphone);
 //xac nhan OTP
 authRouter.post('/verifyphone',authController.verifyphone);
 //goi link resetPassword
-authRouter.post('/reset-password',authController.resetPassword);
+authRouter.post('/reset-password',authController.resetPasswordFromEmail);
 //thay doi mat khau
 authRouter.post('/change-password',authController.changePassword);
 

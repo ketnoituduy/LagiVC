@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const crypto = require('crypto');
+const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 const twilio = require('twilio');
@@ -120,19 +121,34 @@ const authController = {
     register: async (req, res) => {
         try {
             const data = req.body;
+
+            // Kiểm tra xem email đã tồn tại chưa
             const user = await User.findOne({ email: data.email });
             if (user) {
-                return res.status(500).json({ message: 'User da ton tai' });
+                return res.status(400).json({ message: "User đã tồn tại" });
             }
-            const newUser = new User(data);
-            newUser.verificationToken = crypto.randomBytes(20).toString("hex");
+
+            // Mã hóa mật khẩu
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(data.password, salt);
+
+            // Tạo người dùng mới
+            const newUser = new User({
+                ...data,
+                password: hashedPassword, // Lưu mật khẩu đã hash
+                verificationToken: crypto.randomBytes(20).toString("hex"),
+            });
+
+            // Lưu vào database
             await newUser.save();
-            res.status(200).json({ message: 'thanh cong trong viec tao tai khoan' });
-            sendVerificationEmail(newUser.email, newUser.verificationToken)
-        }
-        catch (error) {
-            console.log('registion failed')
-            res.status(500).json({ message: "registion failed" });
+
+            // Gửi email xác minh
+            sendVerificationEmail(newUser.email, newUser.verificationToken);
+
+            res.status(201).json({ message: "Đăng ký thành công, vui lòng kiểm tra email để xác nhận tài khoản." });
+        } catch (error) {
+            console.error("Đăng ký thất bại:", error);
+            res.status(500).json({ message: "Đăng ký thất bại" });
         }
     },
     //xac nhan email dang ky
@@ -167,7 +183,7 @@ const authController = {
         sendVerificationEmail(email, user.verificationToken);
     },
     // Gửi email thay đổi mật khẩu
-    resetPassword: async (req, res) => {
+    resetPasswordFromEmail: async (req, res) => {
         const { email } = req.body;
         const user = await User.findOne({ email });
 
@@ -242,28 +258,36 @@ const authController = {
         try {
             const { email, password, socketId } = req.body;
 
-            // Tìm user theo email không phân biệt chữ hoa/thường bằng `collation`
+            // Tìm user theo email (không phân biệt chữ hoa/thường)
             const user = await User.findOne({ email })
                 .collation({ locale: "en", strength: 2 });
 
             if (!user) {
-                return res.status(400).json({ message: 'User chưa được đăng ký' });
-            }
-            if (user.password !== password) {
-                return res.status(401).json({ message: 'Invalid credentials' });
-            }
-            if (!user.verified) {
-                return res.status(402).json({ message: 'Chưa xác nhận Email đăng ký' });
+                return res.status(400).json({ message: "User chưa được đăng ký" });
             }
 
+            // So sánh mật khẩu nhập vào với mật khẩu đã hash trong database
+            const isMatch = bcrypt.compareSync(password,user.password);
+            if (!isMatch) {
+                return res.status(401).json({ message: "Invalid credentials" });
+            }
+
+            if (!user.verified) {
+                return res.status(402).json({ message: "Chưa xác nhận Email đăng ký" });
+            }
+
+            // Tạo token đăng nhập
             const token = createToken(user._id);
             const khuvucId = user.khuvuc.khuvucId;
+
+            // Cập nhật socketId của user
             user.socketId = socketId;
             await user.save();
 
             res.status(200).json({ token, khuvucId });
         } catch (error) {
-            res.status(500).json({ message: 'Internal Server Error' });
+            console.error("Login failed:", error);
+            res.status(500).json({ message: "Internal Server Error" });
         }
     }
 }
