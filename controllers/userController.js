@@ -1,7 +1,7 @@
 const User = require('../models/user');
 const Restaurant = require('../models/restaurant');
 const Deliver = require('../models/deliver');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 const userController = {
     //thay doi password
