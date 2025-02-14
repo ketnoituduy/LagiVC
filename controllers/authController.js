@@ -74,11 +74,11 @@ const authController = {
         if (!user) {
             const newUser = new User({ phone, otp });
             await newUser.save();
-             // Gửi OTP qua Twilio
-             const accountSid = process.env.TWILIO_ACCOUNT_SID;
-             const authToken = process.env.TWILIO_AUTH_TOKEN;
-             const twilioClient = twilio(accountSid, authToken);
-             const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
+            // Gửi OTP qua Twilio
+            const accountSid = process.env.TWILIO_ACCOUNT_SID;
+            const authToken = process.env.TWILIO_AUTH_TOKEN;
+            const twilioClient = twilio(accountSid, authToken);
+            const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
             try {
                 await twilioClient.messages.create({
                     body: `Your OTP code is: ${otp}`,
@@ -166,6 +166,65 @@ const authController = {
         res.status(200).json({ message: 'Goi email xac nhan thanh cong' });
         sendVerificationEmail(email, user.verificationToken);
     },
+    // Gửi email thay đổi mật khẩu
+    resetPassword: async (req, res) => {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(400).json({ message: 'Email không tồn tại' });
+        }
+
+        // Tạo token reset mật khẩu
+        const token = jwt.sign({ userId: user._id }, process.env.ACCESS_TOKEN, { expiresIn: '1h' });
+
+        // Tạo link thay đổi mật khẩu
+        const resetLink = `lagivc://reset-password/${token}`;
+
+        // Cấu hình gửi email
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USERNAME,
+                pass: process.env.EMAIL_PASSWORD
+            }
+        });
+
+        const mailOptions = {
+            from: 'Lagi VC',
+            to: email,
+            subject: 'Thay đổi mật khẩu',
+            text: `Bạn đã yêu cầu thay đổi mật khẩu. Vui lòng nhấn vào link sau để thay đổi mật khẩu: ${resetLink}`
+        };
+
+        try {
+            await transporter.sendMail(mailOptions);
+            res.status(200).json({ message: 'Link thay đổi mật khẩu đã được gửi đến email của bạn' });
+        } catch (err) {
+            res.status(500).json({ message: 'Lỗi gửi email' });
+        }
+    },
+    // API thay đổi mật khẩu
+    changePassword: async (req, res) => {
+        const { token, newPassword } = req.body;
+
+        try {
+            const decoded = jwt.verify(token, process.env.ACCESS_TOKEN);
+            const user = await User.findById(decoded.userId);
+
+            if (!user) {
+                return res.status(400).json({ message: 'Người dùng không tồn tại' });
+            }
+
+            // Cập nhật mật khẩu mới cho người dùng
+            user.password = newPassword;
+            await user.save();
+
+            res.status(200).json({ message: 'Mật khẩu đã được thay đổi thành công' });
+        } catch (err) {
+            res.status(400).json({ message: 'Token không hợp lệ hoặc đã hết hạn' });
+        }
+    },
     //Lay lai Password bị quên
     sendPasswordEmail: async (req, res) => {
         const email = req.params.email;
@@ -182,16 +241,19 @@ const authController = {
     loginAccount: async (req, res) => {
         try {
             const { email, password, socketId } = req.body;
-            const user = await User.findOne({ email: { $regex: new RegExp('^' + email, 'i') } });
+
+            // Tìm user theo email không phân biệt chữ hoa/thường bằng `collation`
+            const user = await User.findOne({ email })
+                .collation({ locale: "en", strength: 2 });
 
             if (!user) {
-                return res.status(400).json({ message: 'User chua duoc dang ky' });
+                return res.status(400).json({ message: 'User chưa được đăng ký' });
             }
             if (user.password !== password) {
-                return res.status(401).json({ message: 'Mat khau khong chinh xac' });
+                return res.status(401).json({ message: 'Invalid credentials' });
             }
             if (!user.verified) {
-                return res.status(402).json({ message: 'Chua xac nhan Email dang ky' });
+                return res.status(402).json({ message: 'Chưa xác nhận Email đăng ký' });
             }
 
             const token = createToken(user._id);

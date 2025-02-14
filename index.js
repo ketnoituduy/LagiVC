@@ -26,7 +26,7 @@ const Deliver = require('./models/deliver');
 const Ad = require('./models/ad');
 const Region = require('./models/region');
 const Parameter = require('./models/parameter');
-const Category = require('./models/category');
+// const Category = require('./models/category');
 const OrderGrab = require('./models/orderGrab');
 const Version = require('./models/version');
 
