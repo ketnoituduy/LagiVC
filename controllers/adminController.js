@@ -1,6 +1,7 @@
 const Restaurant = require('../models/restaurant');
 const Deliver = require('../models/deliver');
 const User = require('../models/user');
+const bcrypt = require('bcryptjs');
 
 const adminController = {
     getRestaurants: async (req, res) => {
@@ -53,8 +54,8 @@ const adminController = {
             res.status(200).json({ isActive });
         }
     },
-    updateDeliver:async(req,res) =>{
-        const deliverId = req.params.deliverId; 
+    updateDeliver: async (req, res) => {
+        const deliverId = req.params.deliverId;
         const data = req.body;
         const deliver = await Deliver.findOne({ _id: deliverId });
         if (!deliver) {
@@ -63,27 +64,38 @@ const adminController = {
         else {
             deliver.tiencuoc = parseFloat(data.tiencuoc);
             await deliver.save();
-            res.status(200).json({ message:'da cap nhat tien cuoc tai xe thanh cong' });
+            res.status(200).json({ message: 'da cap nhat tien cuoc tai xe thanh cong' });
         }
     },
-    loginAdmin:async(req,res)=>{
-        const email = req.params.email;
-        const user = await User.findOne({ email: { $regex: new RegExp('^' + email, 'i') } })
-        const data = req.body;
-        if(!user){
-            return res.status(500).json({message:'không có user admin'})
+    loginAdmin: async (req, res) => {
+        try {
+            const email = req.params.email;
+            // const user = await User.findOne({ email: { $regex: new RegExp("^" + email, "i") } });
+            const user = await User.findOne({ email: email }).collation({ locale: "en", strength: 2 });
+
+            if (!user) {
+                return res.status(404).json({ message: "Không có user admin" });
+            }
+
+            const { password } = req.body;
+
+            // So sánh mật khẩu đã mã hóa
+            const isMatch =  bcrypt.compareSync(password, user.password);
+            if (!isMatch) {
+                return res.status(401).json({ message: "Mật khẩu không đúng" });
+            }
+
+            if (!user.admin) {
+                return res.status(403).json({ message: "Không phải là admin" });
+            }
+
+            res.status(200).json({ message: "Đăng nhập admin thành công" });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: "Lỗi server" });
         }
-        const currentPassword = user.password;
-        if(currentPassword !== data.password){
-            return res.status(402).json({message:'không đúng password admin'});
-        }
-        console.log(user.admin);
-        if(user.admin === false){
-            return res.status(403).json({message:'không phải là admin'});
-        }
-        res.status(200).json({message:'dang nhap user admin thanh cong'});
     },
-    deleteDeliver:async(req,res)=>{
+    deleteDeliver: async (req, res) => {
         try {
             // Lấy orderId từ request params
             const id = req.params.deliverId;
@@ -94,14 +106,14 @@ const adminController = {
                 return res.status(404).json({ message: 'Deliver không tồn tại' });
             }
             await Deliver.findByIdAndDelete(id);
-            res.status(200).json({message:'Đã xoá tài xế'});
+            res.status(200).json({ message: 'Đã xoá tài xế' });
         }
         catch (err) {
             console.log(err);
             res.status(500).json({ message: 'Đã xảy ra lỗi khi xóa tài xế' });
         }
     },
-    deleteRestaurant:async(req,res)=>{
+    deleteRestaurant: async (req, res) => {
         try {
             // Lấy orderId từ request params
             const id = req.params.restaurantId;
@@ -112,7 +124,7 @@ const adminController = {
                 return res.status(404).json({ message: 'Restaurant không tồn tại' });
             }
             await Restaurant.findByIdAndDelete(id);
-            res.status(200).json({message:'Đã xoá cửa hàng'});
+            res.status(200).json({ message: 'Đã xoá cửa hàng' });
         }
         catch (err) {
             console.log(err);
