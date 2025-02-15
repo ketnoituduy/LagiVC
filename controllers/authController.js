@@ -195,7 +195,7 @@ const authController = {
         const token = jwt.sign({ userId: user._id }, process.env.ACCESS_TOKEN, { expiresIn: '1h' });
 
         // Tạo link thay đổi mật khẩu
-        const resetLink = `lagivc://reset-password/${token}`;
+        const resetLink = `https://ketnoituduy.github.io/lagivcresetpassword/reset-password?token=${token}`;
 
         // Cấu hình gửi email
         const transporter = nodemailer.createTransport({
