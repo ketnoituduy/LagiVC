@@ -184,46 +184,55 @@ const authController = {
     },
     // Gửi email thay đổi mật khẩu
     resetPasswordFromEmail: async (req, res) => {
-        const { email } = req.body;
-        const user = await User.findOne({ email }).collation({ locale: "en", strength: 2 });
-
-        if (!user) {
-            return res.status(400).json({ message: 'Email không tồn tại' });
-        }
-
-        // Tạo token reset mật khẩu
-        const token = jwt.sign({ userId: user._id }, process.env.ACCESS_TOKEN, { expiresIn: '1h' });
-
-        // Tạo link thay đổi mật khẩu
-        const resetLink = `https://ketnoituduy.github.io/lagivcresetpassword/#/reset-password?token=${token}`;
-
-        // Cấu hình gửi email
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USERNAME,
-                pass: process.env.EMAIL_PASSWORD
-            }
-        });
-
-        const mailOptions = {
-            from: 'Lagi VC',
-            to: email,
-            subject: 'Thay đổi mật khẩu',
-            text: `Bạn đã yêu cầu thay đổi mật khẩu. Vui lòng nhấn vào link sau để thay đổi mật khẩu: ${resetLink}`
-        };
-
         try {
+            const { email } = req.body;
+
+            if (!email) {
+                return res.status(400).json({ message: "Vui lòng nhập email" });
+            }
+
+            // Tìm user không phân biệt hoa thường
+            const user = await User.findOne({ email }).collation({ locale: "en", strength: 2 });
+
+            if (!user) {
+                return res.status(400).json({ message: "Email không tồn tại" });
+            }
+
+            // Tạo token reset mật khẩu (1 giờ)
+            const token = jwt.sign({ userId: user._id }, process.env.ACCESS_TOKEN, { expiresIn: "1h" });
+
+            // Tạo link thay đổi mật khẩu
+            const resetLink = `https://ketnoituduy.github.io/lagivcresetpassword/#/reset-password?token=${token}`;
+
+            // Cấu hình gửi email
+            const transporter = nodemailer.createTransport({
+                service: "gmail",
+                auth: {
+                    user: process.env.EMAIL_USERNAME,
+                    pass: process.env.EMAIL_PASSWORD,
+                },
+            });
+
+            const mailOptions = {
+                from: "Lagi VC",
+                to: email,
+                subject: "Thay đổi mật khẩu",
+                text: `Bạn đã yêu cầu thay đổi mật khẩu. Vui lòng nhấn vào link sau để thay đổi mật khẩu: ${resetLink}`,
+            };
+
+            // Gửi email
             await transporter.sendMail(mailOptions);
-            res.status(200).json({ message: 'Link thay đổi mật khẩu đã được gửi đến email của bạn' });
+
+            res.status(200).json({ message: "Link thay đổi mật khẩu đã được gửi đến email của bạn" });
         } catch (err) {
-            res.status(500).json({ message: 'Lỗi gửi email' });
+            console.error("Lỗi gửi email:", err);
+            res.status(500).json({ message: "Lỗi gửi email, vui lòng thử lại" });
         }
     },
     // API thay đổi mật khẩu
     changePassword: async (req, res) => {
         const { token, newPassword } = req.body;
-
+        console.log('token',token);
         try {
             const decoded = jwt.verify(token, process.env.ACCESS_TOKEN);
             const user = await User.findById(decoded.userId);
