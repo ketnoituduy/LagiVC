@@ -123,7 +123,7 @@ const authController = {
             const data = req.body;
 
             // Kiểm tra xem email đã tồn tại chưa
-            const user = await User.findOne({ email: data.email });
+            const user = await User.findOne({ email: data.email }).collation({ locale: "en", strength: 2 });
             if (user) {
                 return res.status(400).json({ message: "User đã tồn tại" });
             }
@@ -173,7 +173,7 @@ const authController = {
     //Goi Email xac nhan 
     sendEmailVerification: async (req, res) => {
         const email = req.params.email;
-        const user = await User.findOne({ email: email });
+        const user = await User.findOne({ email: email }).collation({ locale: "en", strength: 2 });
         if (!user) {
             return res.status(500).json({ message: 'khong co user ton tai' });
         }
@@ -185,7 +185,7 @@ const authController = {
     // Gửi email thay đổi mật khẩu
     resetPasswordFromEmail: async (req, res) => {
         const { email } = req.body;
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email }).collation({ locale: "en", strength: 2 });
 
         if (!user) {
             return res.status(400).json({ message: 'Email không tồn tại' });
@@ -195,7 +195,7 @@ const authController = {
         const token = jwt.sign({ userId: user._id }, process.env.ACCESS_TOKEN, { expiresIn: '1h' });
 
         // Tạo link thay đổi mật khẩu
-        const resetLink = `https://ketnoituduy.github.io/lagivcresetpassword/reset-password?token=${token}`;
+        const resetLink = `https://ketnoituduy.github.io/lagivcresetpassword/#/reset-password?token=${token}`;
 
         // Cấu hình gửi email
         const transporter = nodemailer.createTransport({
