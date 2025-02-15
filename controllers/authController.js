@@ -232,9 +232,7 @@ const authController = {
     // API thay đổi mật khẩu
     changePassword: async (req, res) => {
         const { token, newPassword } = req.body;
-        console.log('token',token);
-        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN);
-        console.log("Decoded token:", decoded,decoded.userId);
+        console.log('token',token,newPassword);
         try {
             const decoded = jwt.verify(token, process.env.ACCESS_TOKEN);
             const user = await User.findById(decoded.userId);
@@ -246,7 +244,7 @@ const authController = {
             // Mã hóa mật khẩu mới
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(newPassword, salt);
-
+            console.log('hashedPassword',hashedPassword);
             // Cập nhật mật khẩu mới
             user.password = hashedPassword;
             await user.save();
