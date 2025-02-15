@@ -233,6 +233,8 @@ const authController = {
     changePassword: async (req, res) => {
         const { token, newPassword } = req.body;
         console.log('token',token);
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN);
+        console.log("Decoded token:", decoded,decoded.userId);
         try {
             const decoded = jwt.verify(token, process.env.ACCESS_TOKEN);
             const user = await User.findById(decoded.userId);
