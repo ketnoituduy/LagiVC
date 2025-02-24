@@ -240,7 +240,7 @@ app.get('/', (req, res) => {
 })
 
 // Endpoint để lấy phiên bản mới nhất
-app.get('/api/version', async (req, res) => {
+app.get('/api/v1/api/version', async (req, res) => {
     Version.find().then(data => {
         console.log('version', data);
         res.status(200).json(data[0]);
@@ -251,7 +251,7 @@ app.get('/api/version', async (req, res) => {
 });
 
 //Lay du lieu khu vuc
-app.get('/khuvuc', async (req, res) => {
+app.get('/api/v1/khuvuc', async (req, res) => {
     Region.find().then(data => {
         res.status(200).json(data);
     }).catch(err => {
@@ -260,7 +260,7 @@ app.get('/khuvuc', async (req, res) => {
 })
 
 //Lay du lieu parameters
-app.get('/parameters', async (req, res) => {
+app.get('/api/v1/parameters', async (req, res) => {
     Parameter.find().then(data => {
         res.status(200).json(data[0]);
     }).catch(err => {
@@ -269,7 +269,7 @@ app.get('/parameters', async (req, res) => {
 })
 
 
-app.get('/:khuvucId/categories', async (req, res) => {
+app.get('/api/v1/:khuvucId/categories', async (req, res) => {
     const id = req.params.khuvucId;
     Region.findById(id).then(data => {
         console.log('categories', data._doc.categories);
@@ -284,7 +284,7 @@ app.get('/:khuvucId/categories', async (req, res) => {
 // app.use(orderRouter);
 // app.use(deliverRouter);
 // app.use(adminRouter);
-app.use("api/v1",apiRoutes);
+app.use("/api/v1",apiRoutes);
 
 
 const fetchDriversFromRestaurant = async (data, order) => {
