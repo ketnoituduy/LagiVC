@@ -5,6 +5,7 @@ const rateLimit = require("express-rate-limit");
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const mongoose = require('mongoose');
+const apiRoutes = require("./routes/apiRoutes");
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -34,12 +35,12 @@ const Version = require('./models/version');
 const checkNearestDriver = require('./parameters/checkNearestDriver');
 const checkNearestDriverGrab = require('./parameters/checkNearestDriverGrab');
 
-const userRouter = require('./routes/user');
-const restaurantRouter = require('./routes/restaurant');
-const orderRouter = require('./routes/order');
-const deliverRouter = require('./routes/deliver');
-const authRouter = require('./routes/auth');
-const adminRouter = require('./routes/admin');
+// const userRouter = require('./routes/user');
+// const restaurantRouter = require('./routes/restaurant');
+// const orderRouter = require('./routes/order');
+// const deliverRouter = require('./routes/deliver');
+// const authRouter = require('./routes/auth');
+// const adminRouter = require('./routes/admin');
 
 const mongoDb = process.env.MONGO_DB;
 
@@ -232,151 +233,6 @@ socketIO.on("connection", (socket) => {
     });
 });
 
-// const rateLimit = {};
-
-// const MAX_REQUESTS = 10; // Giới hạn 10 request
-// const TIME_WINDOW = 5000; // Trong 5 giây
-
-// // Xử lý các sự kiện kết nối từ client
-// socketIO.on('connection', (socket) => {
-
-
-//     console.log("A user connected", socket.id);
-
-//     rateLimit[socket.id] = { count: 0, lastRequest: Date.now() };
-
-//     const isSpamming = (socket) => {
-//         if (!rateLimit[socket.id]) {
-//             rateLimit[socket.id] = { count: 0, lastRequest: Date.now() };
-//         }
-
-//         let now = Date.now();
-//         let elapsed = now - rateLimit[socket.id].lastRequest;
-
-//         if (elapsed < TIME_WINDOW) {
-//             rateLimit[socket.id].count++;
-//             if (rateLimit[socket.id].count > MAX_REQUESTS) {
-//                 console.log(`User ${socket.id} bị chặn do spam!`);
-//                 socket.emit("Server_RateLimit", { message: "Bạn đã gửi quá nhiều yêu cầu, hãy thử lại sau!" });
-//                 return true;
-//             }
-//         } else {
-//             rateLimit[socket.id].count = 1;
-//             rateLimit[socket.id].lastRequest = now;
-//         }
-
-//         return false;
-//     };
-
-//     socket.on('AutoUpdateSocketIO', (data) => {
-//         socket.join(data.khuvucId);
-//     })
-
-//     socket.on('newOrder', async (data) => {
-//         const user = await User.findById(data.restaurantId);
-//         if (!user) {
-//             return;
-//         }
-//         const socketId = user.socketId;
-//         socketIO.to(socketId).emit('Server_NewOrder', { socketId }); // Gửi sự kiện 'Server_NewOrder' đến client có socketId tương ứng
-//         socket.emit('Server_NewOrder');
-//     })
-//     socket.on('RestaurantSendOrderToDelivers', async (data) => {
-//         const order = await Order.findById(data.orderId);
-//         if (!order) {
-//             return;
-//         }
-//         fetchDriversFromRestaurant(data, order);
-//     })
-//     socket.on('RestaurantCancelOrder', (data) => {
-//         const clientId = data.clientId
-//         const restaurantId = data.restaurantId
-//         socketIO.emit('Server_RestaurantCancelOrder', { clientId, restaurantId });
-//     })
-//     socket.on('ClientDeleteOrder', async (data) => {
-//         const user = await User.findById(data.restaurantId);
-//         const socketId = user.socketId;
-//         socketIO.to(socketId).emit('Server_ClientDeleteOrder');
-//         socket.emit('Server_ClientDeleteOrder');
-//     })
-//     socket.on('DeliverDanggiaoOrder', async (data) => {
-//         const userRestaurant = await User.findById(data.restaurantId);
-//         const userClient = await User.findById(data.clientId);
-//         const restaurantSocketId = userRestaurant.socketId;
-//         const clientSocketId = userClient.socketId;
-//         socketIO.to(restaurantSocketId).emit('Server_RestaurantListenDanggiao');
-//         socketIO.to(clientSocketId).emit('Server_ClientListenDanggiao');
-//         socketIO.emit('Server_DeliverDanggiaoOrder', data);
-//     })
-//     socket.on('DeliverCancelOrder', async (data) => {
-//         const order = await Order.findById(data.orderId);
-//         if (!order) {
-//             return;
-//         }
-//         fetchDriversFromDriver(data, order);
-//     })
-//     socket.on('DeliveredOrder', async (data) => {
-//         const restaurant = await User.findById(data.restaurantId);
-//         const client = await User.findById(data.clientId);
-//         const restaurantSocketId = restaurant.socketId;
-//         const clientId = client.socketId;
-//         socket.emit('Server_DeliveredOrder');
-//         socketIO.to(restaurantSocketId).emit('Server_DeliveredOrder');
-//         socketIO.to(clientId).emit('Server_DeliveredOrder');
-//     })
-
-//     socket.on('ClientSendOrderGrabToDelivers', async (data) => {
-//         const orderGrab = await OrderGrab.findById(data.orderGrabId);
-//         if (!orderGrab) {
-//             return;
-//         }
-//         fetchDriversFromClient(data);
-//     })
-
-//     socket.on('ClientDeleteOrderGrab', async (data) => {
-//         if (data.deliverId !== '') {
-//             const user = await User.findById(data.deliverId);
-//             const socketId = user.socketId;
-//             socketIO.to(socketId).emit('Server_ClientDeleteOrderGrab_Driver', { vehicleId: data.vehicleId });
-//         }
-//         else {
-//             socketIO.to(data.khuvucId).emit('Server_ClientDeleteOrderGrab_Driver', { vehicleId: data.vehicleId });
-//         }
-//         socket.emit('Server_ClientDeleteOrderGrab_Client', { vehicleId: data.vehicleId });
-//     })
-
-//     socket.on('DeliverDangdonkhach', async (data) => {
-//         const clientId = data.clientId;
-//         const client = await User.findById(clientId);
-//         if (!client) {
-//             return;
-//         }
-//         const socketId = client.socketId;
-//         const khuvucId = data.khuvucId;
-//         if (data.deliverId !== '') {
-//             socket.emit('Server_DeliverDangdonkhach_Driver', { vehicleId: data.vehicleId });
-//         }
-//         else {
-//             console.log(data.deliverId, 'bbb');
-//             socketIO.to(khuvucId).emit('Server_DeliverDangdonkhach_Driver', { vehicleId: data.vehicleId });
-//         }
-//         socketIO.to(socketId).emit('Server_DeliverDangdonkhach_Client');
-//     })
-
-//     socket.on('DeliverCancelOrderGrab', async (data) => {
-//         const order = await OrderGrab.findById(data.orderGrabId);
-//         if (!order) {
-//             return;
-//         }
-//         fetchDriversFromDriverGrab(data, order);
-//     })
-
-//     socket.on('disconnect', () => {
-//         console.log('da ngat ket noi', socket.id);
-//     })
-// });
-
-
 
 
 app.get('/', (req, res) => {
@@ -412,18 +268,9 @@ app.get('/parameters', async (req, res) => {
     })
 })
 
-//lay du lieu categories
-// app.get('/categories', async (req, res) => {
-//     Category.find().then(data => {
-//         res.status(200).json(data);
-//     }).catch(err => {
-//         res.status(500).json({ message: 'loi truyen categories' });
-//     })
-// })
-//lay du lieu categories
+
 app.get('/:khuvucId/categories', async (req, res) => {
     const id = req.params.khuvucId;
-    console.log('aassddd', id);
     Region.findById(id).then(data => {
         console.log('categories', data._doc.categories);
         res.status(200).json(data._doc.categories);
@@ -431,12 +278,14 @@ app.get('/:khuvucId/categories', async (req, res) => {
         res.status(500).json({ message: 'loi truyen categories' });
     })
 })
-app.use(authRouter);
-app.use(userRouter);
-app.use(restaurantRouter);
-app.use(orderRouter);
-app.use(deliverRouter);
-app.use(adminRouter);
+// app.use(authRouter);
+// app.use(userRouter);
+// app.use(restaurantRouter);
+// app.use(orderRouter);
+// app.use(deliverRouter);
+// app.use(adminRouter);
+app.use("api/v1",apiRoutes);
+
 
 const fetchDriversFromRestaurant = async (data, order) => {
     const orderId = data.orderId;
@@ -453,30 +302,30 @@ const fetchDriversFromRestaurant = async (data, order) => {
     await checkNearestDriver(data.currentRestaurantLocation, orderId, NearestDrivers, name, timeRequest, vehicleId, feeDeliver, khuvucId, socketIO);
 }
 
-const fetchDriversFromDriver = async (data, order) => {
-    const orderId = data.orderId;
-    const deliverId = data.deliverId;
-    const deliver = await Deliver.findOne({ deliverId: deliverId });
-    deliver.status = 1;
-    await deliver.save();
-    const restaurantLocation = data.restaurantLocation;
-    const khuvucId = order.khuvuc.khuvucId;
-    const parameters = await Parameter.find();
-    const tempParameters = parameters[0]._doc;
-    const tempStatus = { name: 'Chấp nhận', color: tempParameters.statusColors.chapNhan };
-    if (order.deliveryId === deliverId) {
-        order.status = tempStatus;
-        order.deliveryId = '';
-        await order.save();
-    }
-    let NearestDrivers = [];
-    NearestDrivers.push({ deliverId: deliverId });
-    const name = 'order';
-    const timeRequest = parameters[0]._doc.requestDeliver;
-    const vehicleId = '1';
-    const feeDeliver = parameters[0]._doc.feeDeliver;
-    await checkNearestDriver(restaurantLocation, orderId, NearestDrivers, name, timeRequest, vehicleId, feeDeliver, khuvucId, socketIO);
-}
+// const fetchDriversFromDriver = async (data, order) => {
+//     const orderId = data.orderId;
+//     const deliverId = data.deliverId;
+//     const deliver = await Deliver.findOne({ deliverId: deliverId });
+//     deliver.status = 1;
+//     await deliver.save();
+//     const restaurantLocation = data.restaurantLocation;
+//     const khuvucId = order.khuvuc.khuvucId;
+//     const parameters = await Parameter.find();
+//     const tempParameters = parameters[0]._doc;
+//     const tempStatus = { name: 'Chấp nhận', color: tempParameters.statusColors.chapNhan };
+//     if (order.deliveryId === deliverId) {
+//         order.status = tempStatus;
+//         order.deliveryId = '';
+//         await order.save();
+//     }
+//     let NearestDrivers = [];
+//     NearestDrivers.push({ deliverId: deliverId });
+//     const name = 'order';
+//     const timeRequest = parameters[0]._doc.requestDeliver;
+//     const vehicleId = '1';
+//     const feeDeliver = parameters[0]._doc.feeDeliver;
+//     await checkNearestDriver(restaurantLocation, orderId, NearestDrivers, name, timeRequest, vehicleId, feeDeliver, khuvucId, socketIO);
+// }
 
 const fetchDriversFromClient = async (data) => {
 

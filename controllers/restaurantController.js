@@ -143,7 +143,6 @@ const restaurantController = {
     //Tim kiem nha hang tu san pham
     searchRestaurantFromProduct: async (req, res) => {
         const restaurantId = req.params.restaurantId;
-        console.log('rreee', restaurantId);
         try {
             const restaurant = await Restaurant.findOne({ restaurantId: restaurantId });
             res.status(200).json(restaurant);
