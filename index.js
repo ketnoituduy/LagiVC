@@ -238,6 +238,9 @@ socketIO.on("connection", (socket) => {
 app.get('/', (req, res) => {
     res.status(200).send('Hello World!');
 })
+app.get('/api/v1', (req, res) => {
+    res.status(200).send('Hello World!');
+})
 
 // Endpoint để lấy phiên bản mới nhất
 app.get('/api/v1/api/version', async (req, res) => {
@@ -365,7 +368,7 @@ const fetchDriversFromDriverGrab = async (data, order) => {
 }
 
 //tu dong cap nhat socketIO
-app.post('/autoUpdateSocketIO/:userId/:socketId', async (req, res) => {
+app.post('/api/v1/autoUpdateSocketIO/:userId/:socketId', async (req, res) => {
     const userId = req.params.userId;
     const socketId = req.params.socketId;
     const user = await User.findById(userId);
@@ -385,7 +388,7 @@ app.post('/autoUpdateSocketIO/:userId/:socketId', async (req, res) => {
 })
 
 //load ads
-app.get('/ads/:khuvucId', async (req, res) => {
+app.get('/api/v1/ads/:khuvucId', async (req, res) => {
     const currentDate = new Date();
     const khuvucId = req.params.khuvucId;
     const ads = await Ad.find({ 'khuvuc.khuvucId': khuvucId, isActive: true, activePeriodStart: { $lte: currentDate }, activePeriodEnd: { $gte: currentDate } });
@@ -395,7 +398,7 @@ app.get('/ads/:khuvucId', async (req, res) => {
     res.status(200).json(ads);
 })
 //nha hang ad
-app.get('/restaurantAd/:restaurantId', async (req, res) => {
+app.get('/api/v1/restaurantAd/:restaurantId', async (req, res) => {
     const restaurantId = req.params.restaurantId;
     const restaurant = await Restaurant.findOne({ restaurantId: restaurantId });
     if (!restaurant) {
