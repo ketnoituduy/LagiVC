@@ -35,13 +35,6 @@ const Version = require('./models/version');
 const checkNearestDriver = require('./parameters/checkNearestDriver');
 const checkNearestDriverGrab = require('./parameters/checkNearestDriverGrab');
 
-// const userRouter = require('./routes/user');
-// const restaurantRouter = require('./routes/restaurant');
-// const orderRouter = require('./routes/order');
-// const deliverRouter = require('./routes/deliver');
-// const authRouter = require('./routes/auth');
-// const adminRouter = require('./routes/admin');
-
 const mongoDb = process.env.MONGO_DB;
 
 mongoose.connect(mongoDb).then(() => {
@@ -281,12 +274,7 @@ app.get('/api/v1/:khuvucId/categories', async (req, res) => {
         res.status(500).json({ message: 'loi truyen categories' });
     })
 })
-// app.use(authRouter);
-// app.use(userRouter);
-// app.use(restaurantRouter);
-// app.use(orderRouter);
-// app.use(deliverRouter);
-// app.use(adminRouter);
+
 app.use("/api/v1",apiRoutes);
 
 
@@ -305,30 +293,7 @@ const fetchDriversFromRestaurant = async (data, order) => {
     await checkNearestDriver(data.currentRestaurantLocation, orderId, NearestDrivers, name, timeRequest, vehicleId, feeDeliver, khuvucId, socketIO);
 }
 
-// const fetchDriversFromDriver = async (data, order) => {
-//     const orderId = data.orderId;
-//     const deliverId = data.deliverId;
-//     const deliver = await Deliver.findOne({ deliverId: deliverId });
-//     deliver.status = 1;
-//     await deliver.save();
-//     const restaurantLocation = data.restaurantLocation;
-//     const khuvucId = order.khuvuc.khuvucId;
-//     const parameters = await Parameter.find();
-//     const tempParameters = parameters[0]._doc;
-//     const tempStatus = { name: 'Chấp nhận', color: tempParameters.statusColors.chapNhan };
-//     if (order.deliveryId === deliverId) {
-//         order.status = tempStatus;
-//         order.deliveryId = '';
-//         await order.save();
-//     }
-//     let NearestDrivers = [];
-//     NearestDrivers.push({ deliverId: deliverId });
-//     const name = 'order';
-//     const timeRequest = parameters[0]._doc.requestDeliver;
-//     const vehicleId = '1';
-//     const feeDeliver = parameters[0]._doc.feeDeliver;
-//     await checkNearestDriver(restaurantLocation, orderId, NearestDrivers, name, timeRequest, vehicleId, feeDeliver, khuvucId, socketIO);
-// }
+
 
 const fetchDriversFromClient = async (data) => {
 
@@ -405,4 +370,5 @@ app.get('/api/v1/restaurantAd/:restaurantId', async (req, res) => {
         return res.status(500).json({ message: 'nha hang khong co' });
     }
     res.status(200).json(restaurant);
+    
 })
