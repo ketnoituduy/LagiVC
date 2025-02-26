@@ -44,9 +44,9 @@ server.listen(port, () => {
     console.log(`🚀 Server đang chạy tại ${process.env.IP_ADDRESS || "localhost"}:${port}`);
 });
 // Bắt lỗi không mong muốn để tránh crash server
-process.on("uncaughtException", (error) => {
-    console.error("❌ Lỗi không mong muốn:", error);
-});
+// process.on("uncaughtException", (error) => {
+//     console.error("❌ Lỗi không mong muốn:", error);
+// });
 
 // process.on("unhandledRejection", (reason, promise) => {
 //     console.error("❌ Lỗi Promise chưa xử lý:", reason);
