@@ -97,7 +97,7 @@ app.get('/api/v1/:khuvucId/categories', async (req, res) => {
         const data = await Region.findById(khuvucId);
         if (!data) return res.status(404).json({ message: "Không tìm thấy khu vực" });
 
-        res.status(200).json(data.categories);
+        res.status(200).json(data._doc.categories);
     } catch (error) {
         res.status(500).json({ message: 'Lỗi lấy danh mục' });
     }
