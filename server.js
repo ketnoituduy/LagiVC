@@ -35,13 +35,21 @@ app.use(limiter);
 app.use("/api/v1", apiRoutes);
 
 // Khởi chạy server
-const server = http.createServer(app); // ✅ Tạo server đúng cách
+const http = require('http').Server(app)
+const server = (http, {
+    cors: {
+        origin: 'http://192.168.1.6:4000'
+    }
+})
 initializeSocket(server); // ✅ Khởi tạo socket
 
-server.listen(port, () => { // ✅ Phải gọi `listen` trên `server`
-    console.log(`🚀 Server đang chạy tại ${process.env.IP_ADDRESS || "localhost"}:${port}`);
-});
+// server.listen(port, () => { // ✅ Phải gọi `listen` trên `server`
+//     console.log(`🚀 Server đang chạy tại ${process.env.IP_ADDRESS || "localhost"}:${port}`);
+// });
 
+http.listen(port, () => {
+    console.log(`🚀 Server đang chạy tại ${process.env.IP_ADDRESS || "localhost"}:${port}`);
+})
 // Bắt lỗi không mong muốn để tránh crash server
 process.on("uncaughtException", (error) => {
     console.error("❌ Lỗi không mong muốn:", error);
