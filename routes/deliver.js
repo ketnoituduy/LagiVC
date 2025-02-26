@@ -1,9 +1,10 @@
 const deliverRouter = require('express').Router();
 const deliverController = require('../controllers/deliverController');
+const middlewareController = require('../controllers/middlewareController');
 //dang ky tai xe
 deliverRouter.post('/dangkytaixe/:userId',deliverController.createDeliver);
 //lay thong tin tai xe
-deliverRouter.get('/getDeliver/:userId',deliverController.getInfoDeliver);
+deliverRouter.get('/getDeliver/:userId',middlewareController.authenticateToken,deliverController.getInfoDeliver);
 //cap nhat thong tin tai xe
 deliverRouter.post('/updatedDeliver/:userId',deliverController.updateDeliver);
 //cap nhat vi tri tai xe

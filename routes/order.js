@@ -1,9 +1,10 @@
 const orderRouter = require('express').Router();
+const middlewareController = require('../controllers/middlewareController');
 const orderController = require('../controllers/orderController');
 //tao order moi khi mua hang
-orderRouter.post('/:userId/order',orderController.createNewOrder);
+orderRouter.post('/:userId/order',middlewareController.authenticateToken,orderController.createNewOrder);
 //tao orderGrab 
-orderRouter.post('/ClientSendOrderGrabToDelivers/:userId',orderController.createOrderGrab);
+orderRouter.post('/ClientSendOrderGrabToDelivers/:userId',middlewareController.authenticateToken,orderController.createOrderGrab);
 //khach hang nhan orders
 orderRouter.get('/client/getOrders/:userId',orderController.clientGetOrders);
 //khach hang nhan ordersGrab

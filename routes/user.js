@@ -1,3 +1,4 @@
+const middlewareController = require('../controllers/middlewareController');
 const userController = require('../controllers/userController');
 const userRouter = require('express').Router();
 
@@ -8,7 +9,7 @@ userRouter.get('/regionUser/:userId',userController.regionUser);
 //xoa user
 userRouter.post('/deleteAccount/:userId',userController.deleteAccount);
 //lay thong tin User
-userRouter.get('/users/:userId',userController.getUser);
+userRouter.get('/users/:userId',middlewareController.authenticateToken,userController.getUser);
 //cap nhat thong tin User
 userRouter.post('/users/:userId',userController.updateUser);
 //cap nhat khu vuc cho User
