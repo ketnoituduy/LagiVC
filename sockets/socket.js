@@ -35,6 +35,7 @@ const isSpamming = (socket) => {
     return false;
 };
 
+
 const initializeSocket = (server) => {
     io = socketIO(server, {
         cors: {
@@ -179,8 +180,10 @@ const initializeSocket = (server) => {
     });
 };
 
+
 const checkNearestDriver = require('../utils/checkNearestDriver');
 const checkNearestDriverGrab = require('../utils/checkNearestDriverGrab');
+const { ieNoOpen } = require("helmet");
 
 const fetchDriversFromRestaurant = async (data, order) => {
     const orderId = data.orderId;
@@ -194,7 +197,7 @@ const fetchDriversFromRestaurant = async (data, order) => {
     const timeRequest = parameters[0]._doc.requestDeliver;
     const vehicleId = '1';
     const feeDeliver = parameters[0]._doc.feeDeliver;
-    await checkNearestDriver(data.currentRestaurantLocation, orderId, NearestDrivers, name, timeRequest, vehicleId, feeDeliver, khuvucId, socketIO);
+    await checkNearestDriver(data.currentRestaurantLocation, orderId, NearestDrivers, name, timeRequest, vehicleId, feeDeliver, khuvucId, io);
 }
 
 const fetchDriversFromClient = async (data) => {
@@ -208,7 +211,7 @@ const fetchDriversFromClient = async (data) => {
     const name = 'orderGrab';
     const timeRequest = tempParameters.requestDeliver;
     const feeDeliver = tempParameters.feeDeliver;
-    await checkNearestDriverGrab(clientLocation, orderGrabId, NearestDrivers, name, timeRequest, vehicleId, feeDeliver, khuvucId, socketIO);
+    await checkNearestDriverGrab(clientLocation, orderGrabId, NearestDrivers, name, timeRequest, vehicleId, feeDeliver, khuvucId, io);
 }
 
 const fetchDriversFromDriverGrab = async (data, order) => {
@@ -231,7 +234,7 @@ const fetchDriversFromDriverGrab = async (data, order) => {
     const timeRequest = parameters[0]._doc.requestDeliver;
     const vehicleId = order.vehicleId;
     const feeDeliver = parameters[0]._doc.feeDeliver;
-    await checkNearestDriverGrab(clientLocation, orderId, NearestDrivers, name, timeRequest, vehicleId, feeDeliver, khuvucId, socketIO);
+    await checkNearestDriverGrab(clientLocation, orderId, NearestDrivers, name, timeRequest, vehicleId, feeDeliver, khuvucId, io);
 }
 
 module.exports = { initializeSocket };
