@@ -36,7 +36,12 @@ const isSpamming = (socket) => {
 };
 
 const initializeSocket = (server) => {
-    io = socketIO(server);
+    io = socketIO(server, {
+        cors: {
+            origin: "http://192.168.1.6:4000",
+            methods: ["GET", "POST"]
+        }
+    });
 
     io.on("connection", (socket) => {
         console.log("A user connected", socket.id);

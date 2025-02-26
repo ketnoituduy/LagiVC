@@ -35,29 +35,22 @@ app.use(limiter);
 app.use("/api/v1", apiRoutes);
 
 // Khởi chạy server
-const http = require('http').Server(app)
-const server = (http, {
-    cors: {
-        origin: 'http://192.168.1.6:4000'
-    }
-})
+const server = http.createServer(app)
+
 initializeSocket(server); // ✅ Khởi tạo socket
 
-// server.listen(port, () => { // ✅ Phải gọi `listen` trên `server`
-//     console.log(`🚀 Server đang chạy tại ${process.env.IP_ADDRESS || "localhost"}:${port}`);
-// });
-
-http.listen(port, () => {
+// ✅ Khởi động server
+server.listen(port, () => {
     console.log(`🚀 Server đang chạy tại ${process.env.IP_ADDRESS || "localhost"}:${port}`);
-})
+});
 // Bắt lỗi không mong muốn để tránh crash server
 process.on("uncaughtException", (error) => {
     console.error("❌ Lỗi không mong muốn:", error);
 });
 
-process.on("unhandledRejection", (reason, promise) => {
-    console.error("❌ Lỗi Promise chưa xử lý:", reason);
-});
+// process.on("unhandledRejection", (reason, promise) => {
+//     console.error("❌ Lỗi Promise chưa xử lý:", reason);
+// });
 
 app.get('/', (req, res) => {
     res.status(200).send('Hello World!');
