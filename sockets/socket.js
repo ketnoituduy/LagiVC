@@ -114,12 +114,6 @@ const initializeSocket = (server) => {
                 // Truy vấn đơn hàng
                 const order = await Order.findById(data.orderId);
                 if (!order) return;
-
-                // Truy vấn user client và user restaurant song song để tối ưu hiệu suất
-                // const [userClient, userRestaurant] = await Promise.all([
-                //     User.findById(order.clientId),
-                //     User.findById(order.restaurantId)
-                // ]);
                 const userClient = await User.findById(order.clientId);
 
                 if (!userClient) return;
@@ -134,9 +128,6 @@ const initializeSocket = (server) => {
                     io.to(userClient.socketId).emit("Server_RestaurantAcceptOrder");
                 }
                 socket.emit("Server_RestaurantAcceptOrder");
-                // if (userRestaurant.socketId) {
-                //     io.to(userRestaurant.socketId).emit("Server_RestaurantAcceptOrder");
-                // }
             } catch (error) {
                 console.error("Lỗi trong sự kiện RestaurantAcceptOrder:", error);
             }
@@ -151,11 +142,6 @@ const initializeSocket = (server) => {
 
                 if (!order || !restaurant) return;
 
-                // Truy vấn user client và user restaurant cùng lúc để tối ưu hiệu suất
-                // const [userClient, userRestaurant] = await Promise.all([
-                //     User.findById(order.clientId),
-                //     User.findById(order.restaurantId)
-                // ]);
                 const userClient = await User.findById(order.clientId);
 
                 if (!userClient) return;
@@ -164,9 +150,12 @@ const initializeSocket = (server) => {
                 order.status = data.status;
                 await order.save();
 
+                const parameters = await Parameter.find();
+                const serviceFeeForRestaurant = parameters[0]._doc.serviceFeeForRestaurant;
+
                 // Giảm serviceFee an toàn hơn
                 const serviceFee = restaurant.serviceFee || 0;
-                restaurant.serviceFee = Math.max(0, serviceFee - (5 * serviceFee) / 100);
+                restaurant.serviceFee = Math.max(0, serviceFee - (serviceFeeForRestaurant * serviceFee) / 100);
                 await restaurant.save();
 
                 // Kiểm tra socketId trước khi emit
@@ -174,9 +163,6 @@ const initializeSocket = (server) => {
                     io.to(userClient.socketId).emit("Server_RestaurantDanggiao");
                 }
                 socket.emit("Server_RestaurantDanggiao");
-                // if (userRestaurant.socketId) {
-                //     io.to(userRestaurant.socketId).emit("Server_RestaurantDanggiao");
-                // }
             } catch (error) {
                 console.error("Lỗi trong sự kiện RestaurantDanggiao:", error);
             }
@@ -202,27 +188,15 @@ const initializeSocket = (server) => {
                 const order = await Order.findById(data.orderId);
                 if (!order) return;
 
-                // Truy vấn user client và user restaurant cùng lúc để tối ưu hiệu suất
-                // const [userClient, userRestaurant] = await Promise.all([
-                //     User.findById(order.clientId),
-                //     User.findById(order.restaurantId)
-                // ]);
                 const userClient = await User.findById(order.clientId);
 
                 if (!userClient) return;
-
-                // Cập nhật trạng thái đơn hàng
-                // order.status = data.status;
-                // await order.save();
 
                 // Kiểm tra socketId trước khi emit
                 if (userClient.socketId) {
                     io.to(userClient.socketId).emit("Server_RestaurantDagiao");
                 }
                 socket.emit("Server_RestaurantDagiao");
-                // if (userRestaurant.socketId) {
-                //     io.to(userRestaurant.socketId).emit("Server_RestaurantDagiao");
-                // }
             } catch (error) {
                 console.error("Lỗi trong sự kiện RestaurantDagiao:", error);
             }
