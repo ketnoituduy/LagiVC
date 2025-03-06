@@ -74,22 +74,22 @@ const initializeSocket = (server) => {
             fetchDriversFromRestaurant(data, order);
         });
 
-        socket.on("RestaurantAcceptOrder", async (data) => {
-            if (isSpamming(socket)) return;
-            const order = await Order.findById(data.orderId);
-            if (!order) return;
-            const userClient = await User.findById(data.clientId);
-            const userRestaurant = await User.findById(data.restaurantId);
-            const clientSocketId = userClient.socketId;
-            const restaurantSocketId = userRestaurant.socketId;
-            // const orderId = data.orderId;
-            // const khuvucId = order.khuvuc.khuvucId;
-            order.status = data.status;
-            order.restaurantNote = data.restaurantNote;
-            await order.save();
-            io.to(clientSocketId).emit("Server_RestaurantAcceptOrder")
-            io.to(restaurantSocketId).emit("Server_RestaurantAcceptOrder")
-        })
+        // socket.on("RestaurantAcceptOrder", async (data) => {
+        //     if (isSpamming(socket)) return;
+        //     const order = await Order.findById(data.orderId);
+        //     if (!order) return;
+        //     const userClient = await User.findById(data.clientId);
+        //     const userRestaurant = await User.findById(data.restaurantId);
+        //     const clientSocketId = userClient.socketId;
+        //     const restaurantSocketId = userRestaurant.socketId;
+        //     // const orderId = data.orderId;
+        //     // const khuvucId = order.khuvuc.khuvucId;
+        //     order.status = data.status;
+        //     order.restaurantNote = data.restaurantNote;
+        //     await order.save();
+        //     io.to(clientSocketId).emit("Server_RestaurantAcceptOrder")
+        //     io.to(restaurantSocketId).emit("Server_RestaurantAcceptOrder")
+        // })
 
         // socket.on('RestaurantDanggiao', async(data) =>{
         //     if (isSpamming(socket)) return;
@@ -107,6 +107,38 @@ const initializeSocket = (server) => {
         //     io.to(clientSocketId).emit("Server_RestaurantDanggiao")
         //     io.to(restaurantSocketId).emit("Server_RestaurantDanggiao")
         // })
+        socket.on("RestaurantAcceptOrder", async (data) => {
+            try {
+                if (isSpamming(socket)) return;
+
+                // Truy vấn đơn hàng
+                const order = await Order.findById(data.orderId);
+                if (!order) return;
+
+                // Truy vấn user client và user restaurant song song để tối ưu hiệu suất
+                const [userClient, userRestaurant] = await Promise.all([
+                    User.findById(order.clientId),
+                    User.findById(order.restaurantId)
+                ]);
+
+                if (!userClient || !userRestaurant) return;
+
+                // Cập nhật trạng thái đơn hàng
+                order.status = data.status;
+                order.restaurantNote = data.restaurantNote;
+                await order.save();
+                
+                // Kiểm tra socketId trước khi emit
+                if (userClient.socketId) {
+                    io.to(userClient.socketId).emit("Server_RestaurantAcceptOrder");
+                }
+                if (userRestaurant.socketId) {
+                    io.to(userRestaurant.socketId).emit("Server_RestaurantAcceptOrder");
+                }
+            } catch (error) {
+                console.error("Lỗi trong sự kiện RestaurantAcceptOrder:", error);
+            }
+        });
         socket.on('RestaurantDanggiao', async (data) => {
             try {
                 if (isSpamming(socket)) return;
