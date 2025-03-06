@@ -64,5 +64,7 @@ restaurantRouter.get('/danhmucduocchon/restaurants/:restaurantId',restaurantCont
 restaurantRouter.post('/numOrderOfRestaurant/:id',restaurantController.numOrderOfRestaurant);
 //lay numberOrder
 restaurantRouter.get('/getNumOrder/:id',restaurantController.getNumOrder);
+//cap nhat phuong thuc giao hang
+restaurantRouter.post('/capnhatphuongthucgiaohang/:id',restaurantController.CapnhatPhuongthucgiaohang);
 
 module.exports = restaurantRouter;

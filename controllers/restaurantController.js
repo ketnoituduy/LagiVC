@@ -678,6 +678,31 @@ const restaurantController = {
             console.error(err);
             res.status(500).json({ message: 'Internal Server Error' });
         }
+    },
+    CapnhatPhuongthucgiaohang : async (req, res) => {
+        try {
+            const restaurantId = req.params.id;
+            const { nhahanggiao } = req.body;
+
+            const restaurant = await Restaurant.findOne({ restaurantId });
+
+            if (!restaurant) {
+                return res.status(404).json({ message: 'Không tìm thấy cửa hàng' });
+            }
+
+            if ((!restaurant.serviceFee || restaurant.serviceFee <= 0)) {
+                return res.status(400).json({ message: 'Phí dịch vụ không đủ để cập nhật' });
+            }
+            
+            restaurant.nhahanggiao = nhahanggiao;
+            await restaurant.save();
+
+            return res.status(200).json({ message: 'Cập nhật thành công' });
+
+        } catch (err) {
+            console.error("Lỗi khi cập nhật phương thức giao hàng:", err);
+            return res.status(500).json({ message: 'Lỗi hệ thống' });
+        }
     }
 
 
