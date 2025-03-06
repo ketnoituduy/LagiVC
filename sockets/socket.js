@@ -116,12 +116,13 @@ const initializeSocket = (server) => {
                 if (!order) return;
 
                 // Truy vấn user client và user restaurant song song để tối ưu hiệu suất
-                const [userClient, userRestaurant] = await Promise.all([
-                    User.findById(order.clientId),
-                    User.findById(order.restaurantId)
-                ]);
+                // const [userClient, userRestaurant] = await Promise.all([
+                //     User.findById(order.clientId),
+                //     User.findById(order.restaurantId)
+                // ]);
+                const userClient = await User.findById(order.clientId);
 
-                if (!userClient || !userRestaurant) return;
+                if (!userClient) return;
 
                 // Cập nhật trạng thái đơn hàng
                 order.status = data.status;
@@ -132,9 +133,10 @@ const initializeSocket = (server) => {
                 if (userClient.socketId) {
                     io.to(userClient.socketId).emit("Server_RestaurantAcceptOrder");
                 }
-                if (userRestaurant.socketId) {
-                    io.to(userRestaurant.socketId).emit("Server_RestaurantAcceptOrder");
-                }
+                socket.emit("Server_RestaurantAcceptOrder");
+                // if (userRestaurant.socketId) {
+                //     io.to(userRestaurant.socketId).emit("Server_RestaurantAcceptOrder");
+                // }
             } catch (error) {
                 console.error("Lỗi trong sự kiện RestaurantAcceptOrder:", error);
             }
@@ -150,12 +152,13 @@ const initializeSocket = (server) => {
                 if (!order || !restaurant) return;
 
                 // Truy vấn user client và user restaurant cùng lúc để tối ưu hiệu suất
-                const [userClient, userRestaurant] = await Promise.all([
-                    User.findById(order.clientId),
-                    User.findById(order.restaurantId)
-                ]);
+                // const [userClient, userRestaurant] = await Promise.all([
+                //     User.findById(order.clientId),
+                //     User.findById(order.restaurantId)
+                // ]);
+                const userClient = await User.findById(order.clientId);
 
-                if (!userClient || !userRestaurant) return;
+                if (!userClient) return;
 
                 // Cập nhật trạng thái đơn hàng
                 order.status = data.status;
@@ -170,9 +173,10 @@ const initializeSocket = (server) => {
                 if (userClient.socketId) {
                     io.to(userClient.socketId).emit("Server_RestaurantDanggiao");
                 }
-                if (userRestaurant.socketId) {
-                    io.to(userRestaurant.socketId).emit("Server_RestaurantDanggiao");
-                }
+                socket.emit("Server_RestaurantDanggiao");
+                // if (userRestaurant.socketId) {
+                //     io.to(userRestaurant.socketId).emit("Server_RestaurantDanggiao");
+                // }
             } catch (error) {
                 console.error("Lỗi trong sự kiện RestaurantDanggiao:", error);
             }
@@ -199,12 +203,13 @@ const initializeSocket = (server) => {
                 if (!order) return;
 
                 // Truy vấn user client và user restaurant cùng lúc để tối ưu hiệu suất
-                const [userClient, userRestaurant] = await Promise.all([
-                    User.findById(order.clientId),
-                    User.findById(order.restaurantId)
-                ]);
+                // const [userClient, userRestaurant] = await Promise.all([
+                //     User.findById(order.clientId),
+                //     User.findById(order.restaurantId)
+                // ]);
+                const userClient = await User.findById(order.clientId);
 
-                if (!userClient || !userRestaurant) return;
+                if (!userClient) return;
 
                 // Cập nhật trạng thái đơn hàng
                 // order.status = data.status;
@@ -214,9 +219,10 @@ const initializeSocket = (server) => {
                 if (userClient.socketId) {
                     io.to(userClient.socketId).emit("Server_RestaurantDagiao");
                 }
-                if (userRestaurant.socketId) {
-                    io.to(userRestaurant.socketId).emit("Server_RestaurantDagiao");
-                }
+                socket.emit("Server_RestaurantDagiao");
+                // if (userRestaurant.socketId) {
+                //     io.to(userRestaurant.socketId).emit("Server_RestaurantDagiao");
+                // }
             } catch (error) {
                 console.error("Lỗi trong sự kiện RestaurantDagiao:", error);
             }
