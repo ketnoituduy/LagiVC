@@ -292,6 +292,15 @@ const initializeSocket = (server) => {
             io.to(socketId).emit("Server_DeliverDangdonkhach_Client");
         });
 
+        socket.on("DeliverCancelOrder", async (data) => {
+            if (isSpamming(socket)) return;
+
+            const order = await Order.findById(data.orderId);
+            if (!order) return;
+
+            fetchDriversFromDriver(data, order);
+        });
+
         socket.on("DeliverCancelOrderGrab", async (data) => {
             if (isSpamming(socket)) return;
 
@@ -341,6 +350,32 @@ const fetchDriversFromClient = async (data) => {
     const feeDeliver = tempParameters.feeDeliver;
     await checkNearestDriverGrab(clientLocation, orderGrabId, NearestDrivers, name, timeRequest, vehicleId, feeDeliver, khuvucId, io);
 }
+
+const fetchDriversFromDriver = async (data, order) => {
+    const orderId = data.orderId;
+    const deliverId = data.deliverId;
+    const deliver = await Deliver.findOne({ deliverId: deliverId });
+    deliver.status = 1;
+    await deliver.save();
+    const restaurantLocation = data.restaurantLocation;
+    const khuvucId = order.khuvuc.khuvucId;
+    const parameters = await Parameter.find();
+    const tempParameters = parameters[0]._doc;
+    const tempStatus = { name: 'Chấp nhận', color: tempParameters.statusColors.chapNhan };
+    if (order.deliveryId === deliverId) {
+        order.status = tempStatus;
+        order.deliveryId = '';
+        await order.save();
+    }
+    let NearestDrivers = [];
+    NearestDrivers.push({ deliverId: deliverId });
+    const name = 'order';
+    const timeRequest = parameters[0]._doc.requestDeliver;
+    const vehicleId = '1';
+    const feeDeliver = parameters[0]._doc.feeDeliver;
+    await checkNearestDriver(restaurantLocation, orderId, NearestDrivers, name, timeRequest, vehicleId, feeDeliver, khuvucId, io);
+}
+
 
 const fetchDriversFromDriverGrab = async (data, order) => {
     const orderId = data.orderGrabId;

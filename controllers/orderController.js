@@ -107,13 +107,28 @@ const orderController = {
     },
     //cua hang cancel order
     restaurantCancelOrder: async (req, res) => {
-        const orderId = req.params.orderId;
-        const data = req.body;
-        const order = await Order.findById(orderId);
-        order.status = data.status;
-        order.restaurantNote = data.restaurantNote;
-        await order.save();
-        res.status(200).json({ message: 'Cancel hoa don thanh cong' });
+        try {
+            const orderId = req.params.orderId;
+            const data = req.body;
+
+            const order = await Order.findById(orderId);
+            if (!order) {
+                return res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
+            }
+
+            if (order.deliveryId) {
+                return res.status(400).json({ message: 'Có tài xế đã nhận đơn, không thể hủy' });
+            }
+            
+            order.status = data.status;
+            order.restaurantNote = data.restaurantNote;
+            await order.save();
+
+            return res.status(200).json({ message: 'Hủy đơn hàng thành công' });
+        } catch (err) {
+            console.error("Lỗi khi hủy đơn hàng:", err);
+            return res.status(500).json({ message: 'Lỗi hệ thống, vui lòng thử lại sau' });
+        }
     },
     //nhan orders tu tai xe
     deliverGetOrders: async (req, res) => {
