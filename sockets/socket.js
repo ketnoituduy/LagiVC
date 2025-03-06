@@ -145,14 +145,14 @@ const initializeSocket = (server) => {
 
                 // Tìm order và restaurant
                 const order = await Order.findById(data.orderId);
-                const restaurant = await Restaurant.findOne({ restaurantId: data.restaurantId });
+                const restaurant = await Restaurant.findOne({ restaurantId: order.restaurantId });
 
                 if (!order || !restaurant) return;
 
                 // Truy vấn user client và user restaurant cùng lúc để tối ưu hiệu suất
                 const [userClient, userRestaurant] = await Promise.all([
-                    User.findById(data.clientId),
-                    User.findById(data.restaurantId)
+                    User.findById(order.clientId),
+                    User.findById(order.restaurantId)
                 ]);
 
                 if (!userClient || !userRestaurant) return;
@@ -200,15 +200,15 @@ const initializeSocket = (server) => {
 
                 // Truy vấn user client và user restaurant cùng lúc để tối ưu hiệu suất
                 const [userClient, userRestaurant] = await Promise.all([
-                    User.findById(data.clientId),
-                    User.findById(data.restaurantId)
+                    User.findById(order.clientId),
+                    User.findById(order.restaurantId)
                 ]);
 
                 if (!userClient || !userRestaurant) return;
 
                 // Cập nhật trạng thái đơn hàng
-                order.status = data.status;
-                await order.save();
+                // order.status = data.status;
+                // await order.save();
 
                 // Kiểm tra socketId trước khi emit
                 if (userClient.socketId) {
