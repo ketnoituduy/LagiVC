@@ -27,5 +27,7 @@ orderRouter.post('/deliverAcceptOrder/:userId/:orderId',orderController.deliverA
 orderRouter.post('/deliverAcceptOrderGrab/:userId/:orderGrabId',orderController.deliverAcceptOrderGrab);
 //tai xe da giao hang
 orderRouter.post('/DeliveredOrder/:userId/:orderId',orderController.DeliveredOrder);
+//Nha hang da giao
+orderRouter.post('/RestaurantDagiao/:userId/:orderId',orderController.NhahangDagiao);
 
 module.exports = orderRouter;

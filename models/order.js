@@ -34,7 +34,8 @@ const orderSchema = new mongoose.Schema({
     transportFee:Number,
     vehicleId:String,
     supportShip: Number,
-    numberOrder:Number
+    numberOrder:Number,
+    nhahanggiao:Boolean
 })
 const Order = mongoose.model('Order',orderSchema);
 module.exports = Order;

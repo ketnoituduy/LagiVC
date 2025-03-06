@@ -289,7 +289,7 @@ const orderController = {
                 // deliver.status = 2;
                 await deliver.save();
             }
-            if(data.title === 'Hoàn tất'){
+            if (data.title === 'Hoàn tất') {
                 deliver.status = 1;
                 await deliver.save();
             }
@@ -320,6 +320,7 @@ const orderController = {
         const order = await Order.findById(orderId);
         const { deliveryId, restaurantId } = order;
         const restaurant = await Restaurant.findOne({ restaurantId: restaurantId });
+        //Kiem tra tai khoan tai xe trong dien thoai trung voi tai khoan tai xe trong hoa don
         if (userId === deliveryId) {
             const deliver = await Deliver.findOne({ deliverId: userId });
             deliver.status = 1;
@@ -383,6 +384,100 @@ const orderController = {
         }
         else {
             res.status(201).json({ message: 'da co tai xe khac giao' });
+        }
+    },
+
+    //nha hang da giao xong
+    NhahangDagiao: async (req, res) => {
+        try {
+            const { orderId } = req.params;
+            const status = req.body;
+
+            // Kiểm tra đơn hàng
+            const order = await Order.findById(orderId);
+            if (!order) {
+                return res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
+            }
+
+            // Cập nhật trạng thái đơn hàng
+            order.status = status;
+            await order.save();
+
+            // Kiểm tra nhà hàng
+            const { restaurantId } = order;
+            const restaurant = await Restaurant.findOne({ restaurantId });
+            if (!restaurant) {
+                return res.status(404).json({ message: 'Không tìm thấy nhà hàng' });
+            }
+
+            // Cập nhật số đơn hàng đã giao
+            restaurant.numberOrder = (restaurant.numberOrder || 0) + 1;
+            await restaurant.save();
+
+            // Gửi thông báo cho khách hàng
+            sendPushNotification(order.clientNotificationToken, 'Thông báo', 'Đơn hàng đã giao');
+
+            // Xác định thời gian trong ngày
+            const currentDate = new Date();
+            const startOfToday = new Date().setHours(0, 0, 0, 0);
+            const endOfToday = new Date().setHours(23, 59, 59, 999);
+
+            // Cập nhật sản phẩm đã mua
+            for (const item of order.items) {
+                const purchasedProduct = await PurchasedProduct.findOne({ productId: item.productId });
+
+                if (purchasedProduct) {
+                    // Cập nhật sản phẩm đã mua
+                    purchasedProduct.quantity += item.quantity;
+                    purchasedProduct.timestamp = currentDate;
+                    purchasedProduct.quantityInDay =
+                        (purchasedProduct.timestamp >= startOfToday && purchasedProduct.timestamp <= endOfToday)
+                            ? purchasedProduct.quantityInDay + item.quantity
+                            : item.quantity;
+
+                    if (
+                        purchasedProduct.price !== item.price ||
+                        purchasedProduct.imageUrl !== item.image.imageUrl ||
+                        purchasedProduct.name !== item.name ||
+                        purchasedProduct.khuvuc !== order.khuvuc ||
+                        purchasedProduct.category !== item.category ||
+                        purchasedProduct.restaurantName !== order.restaurantName ||
+                        purchasedProduct.restaurantImage !== order.restaurantImage
+                    ) {
+                        purchasedProduct.price = item.price;
+                        purchasedProduct.imageUrl = item.image.imageUrl;
+                        purchasedProduct.name = item.name;
+                        purchasedProduct.khuvuc = order.khuvuc;
+                        purchasedProduct.category = item.category;
+                        purchasedProduct.restaurantName = order.restaurantName;
+                        purchasedProduct.restaurantImage = order.restaurantImage;
+                    }
+
+                    await purchasedProduct.save();
+                } else {
+                    // Thêm sản phẩm mới vào PurchasedProduct
+                    const newPurchasedProduct = new PurchasedProduct({
+                        productId: item.productId,
+                        quantity: item.quantity,
+                        timestamp: currentDate,
+                        quantityInDay: item.quantity,
+                        price: item.price,
+                        imageUrl: item.image.imageUrl,
+                        name: item.name,
+                        khuvuc: order.khuvuc,
+                        category: item.category,
+                        restaurantName: order.restaurantName,
+                        restaurantImage: order.restaurantImage,
+                        restaurantId: order.restaurantId
+                    });
+                    await newPurchasedProduct.save();
+                }
+            }
+
+            return res.status(200).json({ message: 'Đơn hàng đã giao thành công' });
+        } catch (error) {
+            console.error('Lỗi khi cập nhật đơn hàng:', error);
+            return res.status(500).json({ message: 'Lỗi máy chủ' });
         }
     }
 

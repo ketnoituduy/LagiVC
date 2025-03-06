@@ -44,7 +44,9 @@ const restaurantSchema = new mongoose.Schema({
     supportShips:{type:Array},
     numberOrderInDay:{type:Number,default:0},
     lastOrderDate:Date,
-    numOrder:{type:Number,default:0}
+    numOrder:{type:Number,default:0},
+    serviceFee: {type:Number, default:0},
+    nhahanggiao: {type:Boolean, default: false}
 })
 const Restaurant = mongoose.model('Restaurant', restaurantSchema);
 module.exports = Restaurant;
