@@ -224,7 +224,7 @@ const orderController = {
             res.status(500).json({ message: 'Đã xảy ra lỗi khi xóa đơn hàng' });
         }
     },
-    //tai xe chap nhan don hang tu cua hang
+    //tai xe chap nhan don hang
     deliverAcceptOrderFromRestaurant: async (req, res) => {
         const userId = req.params.userId;
         const orderId = req.params.orderId;
@@ -243,14 +243,12 @@ const orderController = {
                 return res.status(201).json({ message: 'Tien cuoc khong du' });
             }
             else if (status.name === 'Chấp nhận') {
-                // const money = tiencuoc - feeDeliver;
-                // deliver.tiencuoc = money;
                 //status = 2 la dang ban ron vi da nhan hoa don
                 deliver.status = 2;
                 await deliver.save();
             }
             else if (status.name === 'Đang giao') {
-                const money = tiencuoc - feeDeliver;
+                const money = tiencuoc - feeDeliver - tempParameters.fee;
                 deliver.tiencuoc = money;
                 await deliver.save();
             }
@@ -299,7 +297,7 @@ const orderController = {
                 await deliver.save();
             }
             else if (status.name === 'Đang đón khách') {
-                const money = tiencuoc - feeDeliver;
+                const money = tiencuoc - feeDeliver - tempParameters.fee;
                 deliver.tiencuoc = money;
                 // deliver.status = 2;
                 await deliver.save();

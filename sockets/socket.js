@@ -74,39 +74,7 @@ const initializeSocket = (server) => {
             fetchDriversFromRestaurant(data, order);
         });
 
-        // socket.on("RestaurantAcceptOrder", async (data) => {
-        //     if (isSpamming(socket)) return;
-        //     const order = await Order.findById(data.orderId);
-        //     if (!order) return;
-        //     const userClient = await User.findById(data.clientId);
-        //     const userRestaurant = await User.findById(data.restaurantId);
-        //     const clientSocketId = userClient.socketId;
-        //     const restaurantSocketId = userRestaurant.socketId;
-        //     // const orderId = data.orderId;
-        //     // const khuvucId = order.khuvuc.khuvucId;
-        //     order.status = data.status;
-        //     order.restaurantNote = data.restaurantNote;
-        //     await order.save();
-        //     io.to(clientSocketId).emit("Server_RestaurantAcceptOrder")
-        //     io.to(restaurantSocketId).emit("Server_RestaurantAcceptOrder")
-        // })
-
-        // socket.on('RestaurantDanggiao', async(data) =>{
-        //     if (isSpamming(socket)) return;
-        //     const order = await Order.findById(data.orderId);
-        //     const restaurant = await Restaurant.findOne({restaurantId:data.restaurantId})
-        //     if(!order) return;
-        //     const userClient = await User.findById(data.clientId);
-        //     const userRestaurant = await User.findById(data.restaurantId);
-        //     order.status = data.status;
-        //     await order.save();
-        //     restaurant.serviceFee = restaurant.serviceFee - (5 * restaurant.serviceFee)/100;
-        //     await restaurant.save();
-        //     const clientSocketId = userClient.socketId;
-        //     const restaurantSocketId = userRestaurant.socketId;
-        //     io.to(clientSocketId).emit("Server_RestaurantDanggiao")
-        //     io.to(restaurantSocketId).emit("Server_RestaurantDanggiao")
-        // })
+        
         socket.on("RestaurantAcceptOrder", async (data) => {
             try {
                 if (isSpamming(socket)) return;
@@ -152,12 +120,12 @@ const initializeSocket = (server) => {
 
                 const parameters = await Parameter.find();
                 const serviceFeeForRestaurant = parameters[0]._doc.serviceFeeForRestaurant;
-
+                const fee = parameters[0]._doc.fee;
                 // Giảm serviceFee an toàn hơn
                 const serviceFee = restaurant.serviceFee || 0;
-                restaurant.serviceFee = Math.max(0, serviceFee - (serviceFeeForRestaurant * serviceFee) / 100);
+                restaurant.serviceFee = Math.max(0, serviceFee - fee - (serviceFeeForRestaurant * serviceFee) / 100);
                 await restaurant.save();
-
+                
                 // Kiểm tra socketId trước khi emit
                 if (userClient.socketId) {
                     io.to(userClient.socketId).emit("Server_RestaurantDanggiao");
@@ -167,19 +135,7 @@ const initializeSocket = (server) => {
                 console.error("Lỗi trong sự kiện RestaurantDanggiao:", error);
             }
         });
-        // socket.on('RestaurantDagiao', async (data) => {
-        //     if (isSpamming(socket)) return;
-        //     const order = await Order.findById(data.orderId);
-        //     if (!order) return;
-        //     const userClient = await User.findById(data.clientId);
-        //     const userRestaurant = await User.findById(data.restaurantId);
-        //     order.status = data.status;
-        //     await order.save();
-        //     const clientSocketId = userClient.socketId;
-        //     const restaurantSocketId = userRestaurant.socketId;
-        //     io.to(clientSocketId).emit("Server_RestaurantDagiao")
-        //     io.to(restaurantSocketId).emit("Server_RestaurantDagiao")
-        // })
+       
         socket.on('RestaurantDagiao', async (data) => {
             try {
                 if (isSpamming(socket)) return;
