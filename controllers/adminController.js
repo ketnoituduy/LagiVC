@@ -68,16 +68,35 @@ const adminController = {
         }
     },
     updateServiceFeeRestaurant: async (req, res) => {
-        const restaurantId = req.params.restaurantId;
-        const data = req.body;
-        const restaurant = await Restaurant.findById({restaurantId });
-        if (!restaurant) {
-            return res.status(500).json({ message: 'khong co thong tin nha hang' });
-        }
-        else {
-            restaurant.serviceFee = parseFloat(data.serviceFee);
+        try {
+            const restaurantId = req.params.restaurantId;
+            const data = req.body;
+
+            // Kiểm tra restaurantId hợp lệ không
+            if (!restaurantId) {
+                return res.status(400).json({ message: 'restaurantId không hợp lệ' });
+            }
+
+            // Tìm nhà hàng bằng ID
+            const restaurant = await Restaurant.findById(restaurantId);
+            if (!restaurant) {
+                return res.status(404).json({ message: 'Không tìm thấy nhà hàng' });
+            }
+
+            // Kiểm tra serviceFee có hợp lệ không
+            const serviceFee = parseFloat(data.serviceFee);
+            if (isNaN(serviceFee) || serviceFee < 0) {
+                return res.status(400).json({ message: 'serviceFee không hợp lệ' });
+            }
+
+            // Cập nhật serviceFee và lưu
+            restaurant.serviceFee = serviceFee;
             await restaurant.save();
-            res.status(200).json({ message: 'da cap nhat serviceFee thanh cong' });
+
+            res.status(200).json({ message: 'Đã cập nhật serviceFee thành công' });
+        } catch (err) {
+            console.error('Lỗi cập nhật serviceFee:', err);
+            res.status(500).json({ message: 'Lỗi máy chủ, vui lòng thử lại sau' });
         }
     },
     loginAdmin: async (req, res) => {
@@ -93,7 +112,7 @@ const adminController = {
             const { password } = req.body;
 
             // So sánh mật khẩu đã mã hóa
-            const isMatch =  bcrypt.compareSync(password, user.password);
+            const isMatch = bcrypt.compareSync(password, user.password);
             if (!isMatch) {
                 return res.status(401).json({ message: "Mật khẩu không đúng" });
             }
