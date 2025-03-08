@@ -113,7 +113,7 @@ const initializeSocket = (server) => {
                 const userClient = await User.findById(order.clientId);
 
                 if (!userClient) return;
-
+                const totalAmount = order.totalAmount;
                 // Cập nhật trạng thái đơn hàng
                 order.status = data.status;
                 await order.save();
@@ -123,7 +123,7 @@ const initializeSocket = (server) => {
                 const fee = parameters[0]._doc.fee;
                 // Giảm serviceFee an toàn hơn
                 const serviceFee = restaurant.serviceFee || 0;
-                restaurant.serviceFee = Math.max(0, serviceFee - fee - (serviceFeeForRestaurant * serviceFee) / 100);
+                restaurant.serviceFee = Math.max(0, serviceFee - fee - (serviceFeeForRestaurant * totalAmount ) / 100);
                 await restaurant.save();
                 
                 // Kiểm tra socketId trước khi emit
