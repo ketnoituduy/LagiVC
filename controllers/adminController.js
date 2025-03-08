@@ -67,6 +67,19 @@ const adminController = {
             res.status(200).json({ message: 'da cap nhat tien cuoc tai xe thanh cong' });
         }
     },
+    updateServiceFeeRestaurant: async (req, res) => {
+        const restaurantId = req.params.restaurantId;
+        const data = req.body;
+        const restaurant = await Restaurant.findById({restaurantId });
+        if (!restaurant) {
+            return res.status(500).json({ message: 'khong co thong tin nha hang' });
+        }
+        else {
+            restaurant.serviceFee = parseFloat(data.serviceFee);
+            await restaurant.save();
+            res.status(200).json({ message: 'da cap nhat serviceFee thanh cong' });
+        }
+    },
     loginAdmin: async (req, res) => {
         try {
             const email = req.params.email;
