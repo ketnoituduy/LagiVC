@@ -151,6 +151,43 @@ const authController = {
             res.status(500).json({ message: "Đăng ký thất bại" });
         }
     },
+    //dang ky registerNew
+    registerNew: async (req, res) => {
+        try {
+            const data = req.body;
+
+            // Kiểm tra xem email đã tồn tại chưa
+            const user = await User.findOne({ email: data.email }).collation({ locale: "en", strength: 2 });
+            if (user) {
+                return res.status(400).json({ message: "User đã tồn tại" });
+            }
+
+            // Mã hóa mật khẩu
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(data.password, salt);
+
+            // Tạo người dùng mới
+            const newUser = new User({
+                ...data,
+                password: hashedPassword, // Lưu mật khẩu đã hash
+                verificationToken: crypto.randomBytes(20).toString("hex"),
+            });
+           
+            // Lưu vào database
+            await newUser.save();
+             // Tạo token đăng nhập
+             const token = createToken(newUser._id);
+             const khuvucId = data.khuvuc.khuvucId;
+
+            // Gửi email xác minh
+            sendVerificationEmail(newUser.email, newUser.verificationToken);
+
+            res.status(200).json({ token: token, khuvucId:khuvucId});
+        } catch (error) {
+            console.error("Đăng ký thất bại:", error);
+            res.status(500).json({ message: "Đăng ký thất bại" });
+        }
+    },
     //xac nhan email dang ky
     verifyedEmail: async (req, res) => {
         try {
