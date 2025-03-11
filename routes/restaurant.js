@@ -1,4 +1,5 @@
 const restaurantRouter = require('express').Router();
+const middlewareController = require('../controllers/middlewareController');
 const restaurantController = require('../controllers/restaurantController');
 //lay du lieu cac nha hang danh gia cao
 restaurantRouter.get('/restaurants/bestRating/:khuvucId', restaurantController.getRestaurantsBestRating);
@@ -41,7 +42,7 @@ restaurantRouter.post('/reviewRestaurant/:restaurantId/:orderId', restaurantCont
 //lay du lieu san pham cua cua hang de cap nhat 
 restaurantRouter.get('/products/:restaurantId', restaurantController.getUpdateProductsFromRestaurant);
 //tao san pham 
-restaurantRouter.post('/product/:restaurantId',restaurantController.createProduct);
+restaurantRouter.post('/product/:restaurantId',middlewareController.authenticateToken,restaurantController.createProduct);
 // cap nhat active san pham
 restaurantRouter.post('/products/active/:productId',restaurantController.updateActiveProduct);
 //cap nhat san pham
