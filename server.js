@@ -20,6 +20,7 @@ const Ad = require('./models/ad');
 const Region = require('./models/region');
 const Parameter = require('./models/parameter');
 const Version = require('./models/version');
+const blockIPMiddleware = require("./middlewares/blockIP");
 
 // Kết nối MongoDB
 connectDB();
@@ -31,6 +32,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(limiter);
 
+app.use(blockIPMiddleware);
 // Routes
 app.use("/api/v1", apiRoutes);
 
