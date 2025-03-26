@@ -19,12 +19,9 @@ const blockIPMiddleware = async (req, res, next) => {
             return res.status(403).json({ message: '🚫 Truy cập bị từ chối - IP bị chặn' });
         }
 
-        // Lưu IP public vào IPModel nếu chưa tồn tại
-        const existingIP = await IPModel.findOne({ ip: clientIP });
-        if (!existingIP) {
-            await IPModel.create({ ip: clientIP });
-            console.log('✅ IP đã lưu vào MongoDB:', clientIP);
-        }
+        // Lưu IP mỗi lần request, MongoDB sẽ tự động xóa sau 3 ngày
+        await IPModel.create({ ip: clientIP });
+        console.log('✅ IP đã lưu vào MongoDB:', clientIP);
 
         next(); // Cho phép request tiếp tục nếu không bị chặn
     } catch (error) {
