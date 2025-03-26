@@ -3,15 +3,12 @@ const BlockedIP = require("../models/BlockedIP");
 
 const blockIPMiddleware = async (req, res, next) => {
     try {
-        // Lấy IP từ header 'x-forwarded-for' hoặc từ socket
         let clientIP = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
-        
-        // Nếu có nhiều IP (do proxy), lấy IP đầu tiên
         if (clientIP.includes(',')) {
             clientIP = clientIP.split(',')[0].trim();
         }
 
-        console.log('📌 Client IP:', clientIP); // Debug kiểm tra IP
+        console.log('📌 Client IP:', clientIP);
 
         // Kiểm tra xem IP có bị chặn không
         const blocked = await BlockedIP.findOne({ ip: clientIP });
@@ -19,11 +16,19 @@ const blockIPMiddleware = async (req, res, next) => {
             return res.status(403).json({ message: '🚫 Truy cập bị từ chối - IP bị chặn' });
         }
 
-        // Lưu IP mỗi lần request, MongoDB sẽ tự động xóa sau 3 ngày
-        await IPModel.create({ ip: clientIP });
-        console.log('✅ IP đã lưu vào MongoDB:', clientIP);
+        // Tìm IP, nếu có thì tăng requestCount, nếu không thì tạo mới
+        const ipData = await IPModel.findOneAndUpdate(
+            { ip: clientIP }, 
+            { 
+                $inc: { requestCount: 1 }, // Tăng requestCount thêm 1
+                $setOnInsert: { expiresAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000) } // Nếu là insert, set TTL
+            }, 
+            { upsert: true, new: true }
+        );
 
-        next(); // Cho phép request tiếp tục nếu không bị chặn
+        console.log(`✅ IP ${clientIP} đã được ghi nhận, số lần request: ${ipData.requestCount}`);
+
+        next();
     } catch (error) {
         console.error('❌ Lỗi kiểm tra hoặc lưu IP:', error);
         res.status(500).json({ message: 'Lỗi server' });
