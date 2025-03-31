@@ -16,7 +16,7 @@ const createToken = (userId) => {
     };
     // const secrectKey = crypto.randomBytes(20).toString('hex');
     const token = jwt.sign(payload, process.env.ACCESS_TOKEN, {
-        expiresIn: '90d' // Token hết hạn sau 90 ngày (3 tháng)
+        expiresIn: '365d' // Token hết hạn sau 1 năm
     });
     return token;
 }
@@ -45,28 +45,28 @@ const sendVerificationEmail = async (email, verificationToken) => {
 }
 
 //goi Email lay lai mat khau
-// const sendGetPasswordEmail = async (email, password) => {
-//     const transpoter = nodemailer.createTransport({
-//         service: 'gmail',
-//         auth: {
-//             user: process.env.EMAIL_USERNAME,
-//             pass: process.env.EMAIL_PASSWORD
-//         }
-//     })
-//     const mailOption = {
-//         from: 'Lagi VC',
-//         to: email,
-//         subject: 'Lấy lại Password',
-//         text: `Mật khẩu của bạn: ${password}`
-//     };
-//     try {
-//         await transpoter.sendMail(mailOption);
-//         console.log('goi email xac nhan thanh cong');
-//     }
-//     catch (error) {
-//         console.log('loi goi xac nhan Email');
-//     }
-// }
+const sendGetPasswordEmail = async (email, password) => {
+    const transpoter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.EMAIL_USERNAME,
+            pass: process.env.EMAIL_PASSWORD
+        }
+    })
+    const mailOption = {
+        from: 'Lagi VC',
+        to: email,
+        subject: 'Lấy lại Password',
+        text: `Mật khẩu của bạn: ${password}`
+    };
+    try {
+        await transpoter.sendMail(mailOption);
+        console.log('goi email xac nhan thanh cong');
+    }
+    catch (error) {
+        console.log('loi goi xac nhan Email');
+    }
+}
 
 const authController = {
     registerphone: async (req, res) => {

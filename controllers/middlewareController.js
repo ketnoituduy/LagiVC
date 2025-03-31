@@ -1,35 +1,36 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/user');
+require('dotenv').config();
 
 const middlewareController = {
-    authenticateToken: async (req, res, next) => {
+    authenticateToken: (req, res, next) => {
+        const token = req.header('Authorization'); // Lấy token từ header
+
+        if (!token) {
+            return res.status(401).json({ message: 'Không có quyền truy cập!' });
+        }
+
         try {
-            const authHeader = req.headers.authorization;
-            if (!authHeader || !authHeader.startsWith('Bearer ')) {
-                return res.status(401).json({ message: 'Không tìm thấy token' });
-            }
-
-            const token = authHeader.split(' ')[1];
-            const decoded = jwt.verify(token, process.env.ACCESS_TOKEN);
-
-            const user = await User.findById(decoded.userId);
-            if (!user) {
-                return res.status(401).json({ message: 'User không tồn tại' });
-            }
-
-            req.user = user;
-            next();
-        } catch (error) {
-            if (error.name === 'TokenExpiredError') {
+            const decoded = jwt.verify(token, process.env.ACCESS_TOKEN); // Giải mã token
+            
+            // Kiểm tra thời gian hết hạn
+            const currentTime = Math.floor(Date.now() / 1000);
+            if (decoded.exp && decoded.exp < currentTime) {
                 return res.status(401).json({ 
-                    message: 'Token đã hết hạn',
+                    message: 'Token đã hết hạn!',
                     code: 'TOKEN_EXPIRED'
                 });
             }
-            if (error.name === 'JsonWebTokenError') {
-                return res.status(401).json({ message: 'Token không hợp lệ' });
+
+            req.user = decoded; // Gắn user vào request để sử dụng trong controller
+            next(); // Chuyển sang middleware tiếp theo hoặc controller
+        } catch (error) {
+            if (error.name === 'TokenExpiredError') {
+                return res.status(401).json({ 
+                    message: 'Token đã hết hạn!',
+                    code: 'TOKEN_EXPIRED'
+                });
             }
-            return res.status(500).json({ message: 'Lỗi server' });
+            res.status(403).json({ message: 'Token không hợp lệ!' });
         }
     }
 }
