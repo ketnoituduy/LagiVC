@@ -15,9 +15,7 @@ const createToken = (userId) => {
         userId: userId
     };
     // const secrectKey = crypto.randomBytes(20).toString('hex');
-    const token = jwt.sign(payload, process.env.ACCESS_TOKEN, {
-        expiresIn: '365d' // Token hết hạn sau 1 năm
-    });
+    const token = jwt.sign(payload, process.env.ACCESS_TOKEN, { expiresIn: '1y' });
     return token;
 }
 //goi email xac nhan
